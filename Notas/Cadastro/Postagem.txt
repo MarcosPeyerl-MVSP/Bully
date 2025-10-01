@@ -1,22 +1,4 @@
--- Tabela de Usuários
-CREATE TABLE usuario (
-    id_user INT PRIMARY KEY AUTO_INCREMENT,
-    nome_user VARCHAR(100) NOT NULL,
-    username_user VARCHAR(20) UNIQUE NOT NULL,
-    email_user VARCHAR(100) UNIQUE NOT NULL,
-    criado_user DATETIME DEFAULT CURRENT_TIMESTAMP  
-);
-
--- Tabela Escola
-CREATE TABLE escola (
-    id_escola INT PRIMARY KEY AUTO_INCREMENT,
-    nome_escola VARCHAR(150) NOT NULL,
-    categoria_escola ENUM('publica', 'privada') NOT NULL,
-    uf_escola CHAR(2) NOT NULL,
-    bairro_escola VARCHAR(100) NOT NULL,
-);
-
--- Tabela Publicacao (atualizada)
+-- Tabela Publicacao
 CREATE TABLE publicacao (
     id_publi INT PRIMARY KEY AUTO_INCREMENT,
     id_user INT NOT NULL,
