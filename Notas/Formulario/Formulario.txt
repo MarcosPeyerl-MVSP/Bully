@@ -1,0 +1,61 @@
+1 - Você já sofreu bullying?
+    ( ) Nunca (1 ponto)
+    ( ) Ocasionalmente, mas não me afetou profundamente (2 pontos)
+    ( ) Sim, e isso impactou minha autoestima ou saúde mental (3 pontos)
+
+2 - Você já presenciou alguém sofrendo bullying?
+    ( ) Nunca (1 ponto)
+    ( ) Sim, e tentei intervir ou ajudar (3 pontos)
+    ( ) Sim, mas não soube como agir (2 pontos)
+
+3 - Como você reage ao ver uma situação de bullying?
+    ( ) Ignoro ou evito me envolver (1 ponto)
+    ( ) Busco ajuda de um adulto ou autoridade (3 pontos)
+    ( ) Defendo a vítima diretamente (2 pontos)
+
+4 - Você já praticou bullying?
+    ( ) Nunca (3 pontos)
+    ( ) Já participei indiretamente (como risadas) (2 pontos)
+    ( ) Sim, mas me arrependo hoje (1 ponto)
+
+5 - Na sua escola/trabalho, há ações contra bullying?
+    ( ) Sim, e são eficazes (3 pontos)
+    ( ) Existem, mas não são divulgadas (2 pontos)
+    ( ) Não há iniciativas (1 ponto)
+
+6 - Você acha que o bullying pode causar traumas duradouros?
+    ( ) Sim, e é um problema grave (3 pontos)
+    ( ) Depende da situação (2 pontos)
+    ( ) Não, é algo passageiro (1 ponto)
+
+7 - Se alguém próximo fizesse bullying, você interviria?
+    ( ) Sim, diretamente (3 pontos)
+    ( ) Conversaria em privado (2 pontos)
+    ( ) Não me envolveria (1 ponto)
+
+8 - Você já foi excluído de grupos ou atividades?
+    ( ) Nunca (1 ponto)
+    ( ) Ocasionalmente (2 pontos)
+    ( ) Frequentemente (3 pontos)
+
+9 - Como você descreve o ambiente onde vive/trabalha/estuda?
+    ( ) Respeitoso e inclusivo (3 pontos)
+    ( ) Há conflitos, mas são raros (2 pontos)
+    ( ) Hostil e competitivo (1 ponto)
+
+10 - Você busca aprender sobre empatia e respeito?
+    ( ) Sim, constantemente (3 pontos)
+    ( ) Às vezes, quando necessário (2 pontos)
+    ( ) Não vejo necessidade (1 ponto)
+
+Como calcular seu perfil:
+Some os pontos de todas as respostas e veja abaixo:
+
+10–16 pontos: Perfil "Alheio à Problemática"
+Você talvez não tenha vivenciado ou percebido o bullying de forma próxima. É importante se informar mais sobre o tema para ajudar a criar ambientes mais seguros.
+
+17–23 pontos: Perfil "Consciente mas Cauteloso"
+Você reconhece o bullying como um problema, mas pode hesitar em agir. Sua experiência é moderada, e há potencial para se tornar um aliado ativo.
+
+24–30 pontos: Perfil "Atuante na Causa"
+Você já vivenciou ou testemunhou bullying e tem uma postura proativa contra isso. Sua empatia e engajamento são fundamentais para mudanças.
