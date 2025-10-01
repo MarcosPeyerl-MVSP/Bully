@@ -19,7 +19,6 @@ INSERT INTO escola (nome_escola, categoria_escola, uf_escola, bairro_escola) VAL
 ('Colégio Vértice', 'privada', 'SP', 'Campo Belo'),
 ('Escola Municipal Professor Anísio Teixeira', 'publica', 'SP', 'Jardim Ângela'),
 ('Colégio Magno', 'privada', 'SP', 'Jardim Marajoara');
-('Fundação Escola de Comércio Álvares Penteado', 'privada', 'SP', 'Liberdade');
 
 -- Escolas do Rio de Janeiro
 INSERT INTO escola (nome_escola, categoria_escola, uf_escola, bairro_escola) VALUES
