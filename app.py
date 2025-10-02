@@ -13,6 +13,11 @@ def formulario():
     """Formulário"""
     return render_template('variavel/formulario/formulario.html')
 
+@app.route('/definicao')
+def definicao():
+    """Definição"""
+    return render_template('estatico/definicao.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
