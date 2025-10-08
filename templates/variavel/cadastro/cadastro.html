@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='variavel/cadastro/cadastro.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro</h1>
+        <form>
+            <input type="text" placeholder="Nome" required>
+            <input type="email" placeholder="E-mail" required>
+            <input type="password" placeholder="Senha" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <a href="/login">Já tem uma conta? Faça login</a>
+    </div>
+</body>
+</html>

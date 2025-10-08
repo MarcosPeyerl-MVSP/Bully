@@ -259,3 +259,24 @@
 .opacity-75 {
     opacity: 0.75;
 }
+
+/* Estilos para o spinner de carregamento */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Melhorar a aparência das opções selecionadas */
+.option-card .form-check-input:checked ~ .form-check-label {
+    font-weight: 600;
+    color: var(--primary-blue);
+}
+
+.option-card .form-check-input:checked {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}

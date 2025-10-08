@@ -59,22 +59,57 @@
                             <!-- Barra de Progresso -->
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <small class="text-muted">Progresso</small>
-                                <small class="text-muted"><span id="pergunta-atual">1</span>/10</small>
+                                <small class="text-muted"><span id="pergunta-atual">1</span>/{{ perguntas|length }}</small>
                             </div>
                             <div class="progress mb-4" style="height: 10px;">
                                 <div class="progress-bar bg-primary-custom progress-bar-striped progress-bar-animated" 
                                      role="progressbar" style="width: 10%;" 
-                                     aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                                     aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" id="barra-progresso"></div>
+                            </div>
+
+                            <!-- Debug: Mostrar informações das perguntas -->
+                            <div class="alert alert-info d-none" id="debug-info">
+                                <strong>Debug:</strong> 
+                                <span id="debug-text"></span>
                             </div>
 
                             <!-- Formulário -->
                             <form id="formulario-bullying">
                                 <!-- Container onde as perguntas serão carregadas do banco -->
                                 <div id="container-perguntas">
-                                    <!-- As 10 perguntas serão carregadas aqui via JavaScript -->
+                                    {% if perguntas %}
+                                        {% for pergunta in perguntas %}
+                                        <div class="pergunta {% if loop.first %}pergunta-ativa{% else %}d-none{% endif %}" data-id="{{ pergunta.id_perg }}">
+                                            <h4 class="question-title mb-4">{{ pergunta.ordem_perg }}. {{ pergunta.texto_perg }}</h4>
+                                            <div class="opcoes-resposta">
+                                                {% for opcao in pergunta.opcoes %}
+                                                <div class="form-check mb-3 option-card">
+                                                    <input class="form-check-input" type="radio" 
+                                                           name="pergunta_{{ pergunta.id_perg }}" 
+                                                           id="p{{ pergunta.id_perg }}o{{ opcao.id_opcao }}" 
+                                                           value="{{ opcao.pontuacao }}" required
+                                                           data-pergunta="{{ pergunta.id_perg }}">
+                                                    <label class="form-check-label w-100" for="p{{ pergunta.id_perg }}o{{ opcao.id_opcao }}">
+                                                        {{ opcao.texto_opcao }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="alert alert-warning text-center">
+                                            <h4>⚠️ Nenhuma pergunta encontrada</h4>
+                                            <p>As perguntas não puderam ser carregadas do banco de dados.</p>
+                                            <button type="button" class="btn btn-primary" onclick="window.location.reload()">
+                                                <i class="bi bi-arrow-clockwise"></i> Tentar Novamente
+                                            </button>
+                                        </div>
+                                    {% endif %}
                                 </div>
 
                                 <!-- Botões de Navegação -->
+                                {% if perguntas %}
                                 <div class="botoes-navegacao mt-5">
                                     <div class="row g-3">
                                         <div class="col-6">
@@ -90,12 +125,13 @@
                                     </div>
                                     <div class="row mt-3 d-none" id="area-envio">
                                         <div class="col-12">
-                                            <button type="submit" class="btn btn-success w-100 py-3 fw-bold">
+                                            <button type="button" class="btn btn-success w-100 py-3 fw-bold" id="btn-enviar">
                                                 <i class="bi bi-check-circle me-2"></i>Finalizar Questionário
                                             </button>
                                         </div>
                                     </div>
                                 </div>
+                                {% endif %}
                             </form>
                         </div>
                     </div>
@@ -116,8 +152,8 @@
                     <h5>Links Úteis</h5>
                     <ul class="list-unstyled">
                         <li><a href="{{ url_for('index') }}" class="text-decoration-none">Página Inicial</a></li>
-                        <li><a href="#" class="text-decoration-none">Sobre o Projeto</a></li>
-                        <li><a href="#" class="text-decoration-none">Contato</a></li>
+                        <li><a href="{{ url_for('definicao') }}" class="text-decoration-none">Sobre o Projeto</a></li>
+                        <li><a href="{{ url_for('identificar') }}" class="text-decoration-none">Como Identificar</a></li>
                     </ul>
                 </div>
                 <div class="col-md-3">
@@ -139,48 +175,29 @@
     <!-- JavaScript do Formulário -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("📋 Iniciando formulário...");
+            
             const containerPerguntas = document.getElementById('container-perguntas');
             const btnVoltar = document.getElementById('btn-voltar');
             const btnProximo = document.getElementById('btn-proximo');
+            const btnEnviar = document.getElementById('btn-enviar');
             const areaEnvio = document.getElementById('area-envio');
-            const progressBar = document.querySelector('.progress-bar');
+            const progressBar = document.getElementById('barra-progresso');
             const contadorPergunta = document.getElementById('pergunta-atual');
+            const debugInfo = document.getElementById('debug-info');
+            const debugText = document.getElementById('debug-text');
             
+            const perguntas = document.querySelectorAll('.pergunta');
+            const totalPerguntas = perguntas.length;
             let perguntaAtual = 0;
-            const totalPerguntas = 10; // Será carregado do banco
+            const respostas = {};
 
-            // Função para carregar perguntas do backend (simulação)
-            function carregarPerguntas() {
-                // Aqui você fará uma requisição AJAX para buscar as perguntas do banco
-                // Por enquanto, criamos 10 perguntas vazias como placeholder
-                for (let i = 1; i <= totalPerguntas; i++) {
-                    const perguntaDiv = document.createElement('div');
-                    perguntaDiv.className = `pergunta ${i === 1 ? 'pergunta-ativa' : 'd-none'}`;
-                    perguntaDiv.innerHTML = `
-                        <h4 class="question-title mb-4">${i}. <span class="texto-pergunta">Pergunta será carregada do banco de dados...</span></h4>
-                        <div class="opcoes-resposta">
-                            <div class="form-check mb-3 option-card">
-                                <input class="form-check-input" type="radio" name="pergunta${i}" id="p${i}r1" value="1" required>
-                                <label class="form-check-label w-100" for="p${i}r1">
-                                    Opção 1
-                                </label>
-                            </div>
-                            <div class="form-check mb-3 option-card">
-                                <input class="form-check-input" type="radio" name="pergunta${i}" id="p${i}r2" value="2">
-                                <label class="form-check-label w-100" for="p${i}r2">
-                                    Opção 2
-                                </label>
-                            </div>
-                            <div class="form-check mb-3 option-card">
-                                <input class="form-check-input" type="radio" name="pergunta${i}" id="p${i}r3" value="3">
-                                <label class="form-check-label w-100" for="p${i}r3">
-                                    Opção 3
-                                </label>
-                            </div>
-                        </div>
-                    `;
-                    containerPerguntas.appendChild(perguntaDiv);
-                }
+            console.log(`📊 Total de perguntas carregadas: ${totalPerguntas}`);
+
+            // Mostrar debug info se houver problemas
+            if (totalPerguntas === 0) {
+                debugInfo.classList.remove('d-none');
+                debugText.textContent = 'Nenhuma pergunta foi carregada do banco de dados.';
             }
 
             function atualizarNavegacao() {
@@ -202,10 +219,11 @@
                     btnProximo.classList.remove('d-none');
                     areaEnvio.classList.add('d-none');
                 }
+
+                console.log(`📍 Pergunta atual: ${perguntaAtual + 1}/${totalPerguntas}`);
             }
 
             function mostrarPergunta(index) {
-                const perguntas = document.querySelectorAll('.pergunta');
                 perguntas.forEach((pergunta, i) => {
                     pergunta.classList.toggle('pergunta-ativa', i === index);
                     pergunta.classList.toggle('d-none', i !== index);
@@ -214,13 +232,27 @@
                 atualizarNavegacao();
             }
 
-            btnProximo.addEventListener('click', function() {
-                // Validar se uma opção foi selecionada
+            function validarPerguntaAtual() {
                 const perguntaAtualElement = document.querySelector('.pergunta-ativa');
+                if (!perguntaAtualElement) return false;
+                
+                const perguntaId = perguntaAtualElement.getAttribute('data-id');
                 const radios = perguntaAtualElement.querySelectorAll('input[type="radio"]');
                 const algumSelecionado = Array.from(radios).some(radio => radio.checked);
                 
-                if (!algumSelecionado) {
+                if (algumSelecionado) {
+                    // Salvar a resposta
+                    const radioSelecionado = perguntaAtualElement.querySelector('input[type="radio"]:checked');
+                    respostas[perguntaId] = parseInt(radioSelecionado.value);
+                    console.log(`💾 Salva resposta para pergunta ${perguntaId}: ${respostas[perguntaId]}`);
+                }
+                
+                return algumSelecionado;
+            }
+
+            btnProximo.addEventListener('click', function() {
+                // Validar se uma opção foi selecionada
+                if (!validarPerguntaAtual()) {
                     alert('Por favor, selecione uma resposta antes de continuar.');
                     return;
                 }
@@ -236,29 +268,99 @@
                 }
             });
 
+            // Salvar resposta quando o usuário selecionar uma opção
+            document.addEventListener('change', function(e) {
+                if (e.target.type === 'radio') {
+                    const perguntaId = e.target.getAttribute('data-pergunta');
+                    respostas[perguntaId] = parseInt(e.target.value);
+                    console.log(`📝 Resposta selecionada - Pergunta ${perguntaId}: ${e.target.value}`);
+                }
+            });
+
             // Envio do formulário
-            document.getElementById('formulario-bullying').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Coletar todas as respostas
-                const respostas = {};
-                for (let i = 1; i <= totalPerguntas; i++) {
-                    const radioSelecionado = document.querySelector(`input[name="pergunta${i}"]:checked`);
-                    respostas[`pergunta${i}`] = radioSelecionado ? radioSelecionado.value : null;
+            btnEnviar.addEventListener('click', function() {
+                // Validar última pergunta
+                if (!validarPerguntaAtual()) {
+                    alert('Por favor, selecione uma resposta antes de enviar.');
+                    return;
                 }
 
-                // Aqui você fará a requisição AJAX para salvar no banco
-                console.log('Respostas coletadas:', respostas);
-                alert('Formulário enviado com sucesso! As respostas foram salvas.');
-                
-                // Redirecionar para página de resultados ou inicial
-                // window.location.href = "{{ url_for('index') }}";
+                // Verificar se todas as perguntas foram respondidas
+                const respostasArray = [];
+                let todasRespondidas = true;
+                let primeiraNaoRespondida = -1;
+
+                for (let i = 0; i < perguntas.length; i++) {
+                    const perguntaId = perguntas[i].getAttribute('data-id');
+                    if (respostas[perguntaId] === undefined) {
+                        todasRespondidas = false;
+                        primeiraNaoRespondida = i;
+                        break;
+                    }
+                    respostasArray.push(respostas[perguntaId]);
+                }
+
+                if (!todasRespondidas) {
+                    alert('Por favor, responda todas as perguntas antes de enviar.');
+                    mostrarPergunta(primeiraNaoRespondida);
+                    return;
+                }
+
+                console.log('📤 Enviando respostas:', respostasArray);
+
+                // Desabilitar o botão de envio
+                btnEnviar.disabled = true;
+                btnEnviar.innerHTML = '<i class="bi bi-arrow-repeat spinner me-2"></i>Enviando...';
+
+                // Enviar para o servidor
+                fetch('/salvar-resposta', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({respostas: respostasArray})
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na rede');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('✅ Resposta do servidor:', data);
+                    if (data.success) {
+                        window.location.href = `/resultado?perfil=${data.perfil}&pontuacao=${data.pontuacao}&descricao=${encodeURIComponent(data.descricao)}`;
+                    } else {
+                        alert('Erro: ' + data.error);
+                        btnEnviar.disabled = false;
+                        btnEnviar.innerHTML = '<i class="bi bi-check-circle me-2"></i>Finalizar Questionário';
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Erro no envio:', error);
+                    alert('Erro ao enviar respostas: ' + error.message);
+                    btnEnviar.disabled = false;
+                    btnEnviar.innerHTML = '<i class="bi bi-check-circle me-2"></i>Finalizar Questionário';
+                });
             });
 
             // Inicializar
-            carregarPerguntas();
-            atualizarNavegacao();
+            if (totalPerguntas > 0) {
+                atualizarNavegacao();
+                console.log('🎯 Formulário inicializado com sucesso!');
+            }
         });
     </script>
+
+    <style>
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </body>
 </html>
