@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seu Resultado - Alerta Bullying</title>
+    <!-- Google Fonts - Comic Neue -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.6/font/bootstrap-icons.css">
+    <!-- CSS específico do resultado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/variavel/formulario/resultsado.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho / Navegação -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                <i class="bi bi-shield-shaded me-2"></i>PNCB
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('index') }}">
+                            <i class="bi bi-house me-1"></i>Página Inicial
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('formulario') }}">
+                            <i class="bi bi-clipboard-check me-1"></i>Refazer Teste
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Seção Hero -->
+    <section class="hero-section text-white text-center py-5">
+        <div class="container">
+            <h1 class="display-5 fw-bold mb-3">Seu Resultado</h1>
+            <p class="lead mb-0">Descubra seu perfil em relação ao bullying</p>
+        </div>
+    </section>
+
+    <!-- Seção do Resultado -->
+    <section class="form-section py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-md-12">
+                    <div class="card shadow-lg border-0 result-card">
+                        <div class="card-header bg-primary-custom text-white text-center py-4">
+                            <h2 class="mb-0 fw-bold"><i class="bi bi-graph-up me-2"></i>Perfil Identificado</h2>
+                        </div>
+                        
+                        <div class="card-body p-4 p-md-5">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 text-center mb-4 mb-md-0">
+                                    <!-- Ícone baseado no perfil -->
+                                    {% if perfil == 'Alheio à Problemática' %}
+                                    <div class="result-icon text-primary">
+                                        <i class="bi bi-person-check"></i>
+                                    </div>
+                                    <h3 class="text-primary">Alheio à Problemática</h3>
+                                    {% elif perfil == 'Consciente mas Cauteloso' %}
+                                    <div class="result-icon text-warning">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <h3 class="text-warning">Consciente mas Cauteloso</h3>
+                                    {% elif perfil == 'Atuante na Causa' %}
+                                    <div class="result-icon text-success">
+                                        <i class="bi bi-person-heart"></i>
+                                    </div>
+                                    <h3 class="text-success">Atuante na Causa</h3>
+                                    {% else %}
+                                    <div class="result-icon text-secondary">
+                                        <i class="bi bi-question-circle"></i>
+                                    </div>
+                                    <h3 class="text-secondary">{{ perfil }}</h3>
+                                    {% endif %}
+                                    
+                                    <div class="result-score">
+                                        <span class="badge bg-primary-custom fs-5 p-3">Pontuação: {{ pontuacao }}/30</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-8">
+                                    <div class="result-description">
+                                        <p>{{ descricao }}</p>
+                                        
+                                        <!-- Dicas específicas por perfil -->
+                                        <div class="mt-4">
+                                            {% if perfil == 'Alheio à Problemática' %}
+                                            <h5 class="text-primary">💡 Sugestões para você:</h5>
+                                            <ul>
+                                                <li>Busque informações sobre os diferentes tipos de bullying</li>
+                                                <li>Converse com pessoas que já vivenciaram situações de bullying</li>
+                                                <li>Participe de palestras e workshops sobre o tema</li>
+                                                <li>Esteja atento aos sinais em seu ambiente</li>
+                                            </ul>
+                                            {% elif perfil == 'Consciente mas Cauteloso' %}
+                                            <h5 class="text-warning">💡 Sugestões para você:</h5>
+                                            <ul>
+                                                <li>Pratique a intervenção segura em situações de bullying</li>
+                                                <li>Procure apoio de adultos ou autoridades quando necessário</li>
+                                                <li>Fortaleça sua confiança para agir quando testemunhar bullying</li>
+                                                <li>Compartilhe suas preocupações com colegas de confiança</li>
+                                            </ul>
+                                            {% elif perfil == 'Atuante na Causa' %}
+                                            <h5 class="text-success">💡 Sugestões para você:</h5>
+                                            <ul>
+                                                <li>Continue sendo um exemplo positivo para os outros</li>
+                                                <li>Mentore colegas que queiram aprender a intervir</li>
+                                                <li>Participe ativamente de campanhas anti-bullying</li>
+                                                <li>Compartilhe suas experiências para inspirar outros</li>
+                                            </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Informações sobre a escala -->
+                            <div class="info-box mt-4">
+                                <h4><i class="bi bi-info-circle me-2"></i>Entenda a Escala de Pontuação</h4>
+                                <p>Seu resultado é baseado na soma das pontuações de todas as suas respostas. Quanto maior a pontuação, maior seu envolvimento e consciência sobre o tema do bullying.</p>
+                                
+                                <div class="scale-info">
+                                    <div class="scale-item scale-alheio">
+                                        <div class="scale-title text-primary">Alheio à Problemática</div>
+                                        <div class="scale-range">10-16 pontos</div>
+                                        <small>Pouca exposição ou conscientização sobre bullying</small>
+                                    </div>
+                                    <div class="scale-item scale-consciente">
+                                        <div class="scale-title text-warning">Consciente mas Cauteloso</div>
+                                        <div class="scale-range">17-23 pontos</div>
+                                        <small>Reconhece o problema mas hesita em agir</small>
+                                    </div>
+                                    <div class="scale-item scale-atuante">
+                                        <div class="scale-title text-success">Atuante na Causa</div>
+                                        <div class="scale-range">24-30 pontos</div>
+                                        <small>Envolvimento ativo contra o bullying</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Ações -->
+                            <div class="result-actions text-center mt-5">
+                                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-3">
+                                    <i class="bi bi-house me-2"></i>Página Inicial
+                                </a>
+                                <a href="{{ url_for('formulario') }}" class="btn btn-outline-primary btn-lg me-3">
+                                    <i class="bi bi-arrow-repeat me-2"></i>Refazer Teste
+                                </a>
+                                <a href="{{ url_for('definicao') }}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="bi bi-book me-2"></i>Saber Mais
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recursos Adicionais -->
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 shadow-sm stat-card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-telephone text-primary fs-1 mb-3"></i>
+                                    <h5>Precisa de Ajuda?</h5>
+                                    <p class="text-muted">Se você está enfrentando bullying, não hesite em buscar ajuda.</p>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">Recursos de Apoio</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 shadow-sm stat-card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-share text-warning fs-1 mb-3"></i>
+                                    <h5>Compartilhe</h5>
+                                    <p class="text-muted">Ajude outros a refletirem sobre o tema do bullying.</p>
+                                    <a href="#" class="btn btn-outline-warning btn-sm">Compartilhar Resultado</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 shadow-sm stat-card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-graph-up text-success fs-1 mb-3"></i>
+                                    <h5>Estatísticas</h5>
+                                    <p class="text-muted">Veja como outros responderam ao questionário.</p>
+                                    <a href="#" class="btn btn-outline-success btn-sm">Ver Estatísticas</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer class="footer py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Alerta Bullying</h5>
+                    <p>Um projeto acadêmico dedicado a combater o bullying e cyberbullying através da informação e suporte.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Links Úteis</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}" class="text-decoration-none">Página Inicial</a></li>
+                        <li><a href="{{ url_for('definicao') }}" class="text-decoration-none">Sobre o Projeto</a></li>
+                        <li><a href="{{ url_for('identificar') }}" class="text-decoration-none">Como Identificar</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Recursos de Apoio</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="https://www.stopbullying.gov/" class="text-decoration-none" target="_blank">StopBullying.gov</a></li>
+                        <li><a href="https://www.pacer.org/bullying/info/cyberbullying/" class="text-decoration-none" target="_blank">PACER's Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center mb-0">&copy; 2025 Projeto Alerta Bullying. Desenvolvido para fins acadêmicos.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Animação de entrada
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultCard = document.querySelector('.result-card');
+            resultCard.style.transform = 'translateY(20px)';
+            resultCard.style.opacity = '0';
+            
+            setTimeout(() => {
+                resultCard.style.transition = 'all 0.5s ease';
+                resultCard.style.transform = 'translateY(0)';
+                resultCard.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
