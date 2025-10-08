@@ -280,3 +280,12 @@
     background-color: var(--primary-blue);
     border-color: var(--primary-blue);
 }
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
