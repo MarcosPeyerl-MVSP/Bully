@@ -2,7 +2,7 @@ import sqlite3
 import os
 
 class Database:
-    def __init__(self, db_name='bullying.db'):
+    def __init__(self, db_name='form.db'):
         self.db_name = db_name
         self.connection = None
         self.connect()

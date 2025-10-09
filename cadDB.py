@@ -1,101 +1,340 @@
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+import sqlite3
+import os
 
-db = SQLAlchemy()
-
-class Escola(db.Model):
-    __tablename__ = 'escola'
+class Database:
+    def __init__(self, db_name='cad.db'):
+        self.db_name = db_name
+        self.connection = None
+        self.connect()
+        self.create_tables()
+        self.insert_initial_data()
     
-    id_escola = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nome_escola = db.Column(db.String(150), nullable=False)
-    categoria_escola = db.Column(db.Enum('publica', 'privada'), nullable=False)
-    uf_escola = db.Column(db.String(2), nullable=False)
-    bairro_escola = db.Column(db.String(100), nullable=False)
+    def connect(self):
+        """Conecta ao banco de dados SQLite"""
+        try:
+            self.connection = sqlite3.connect(self.db_name, check_same_thread=False)
+            self.connection.row_factory = sqlite3.Row
+            print("✅ Conectado ao SQLite (cadDB) com sucesso!")
+        except Exception as e:
+            print(f"❌ Erro ao conectar ao SQLite (cadDB): {e}")
     
-    usuarios = db.relationship('Usuario', backref='escola', lazy=True)
-    publicacoes = db.relationship('Publicacao', backref='escola', lazy=True)
-
-class Usuario(db.Model):
-    __tablename__ = 'usuario'
+    def create_tables(self):
+        """Cria todas as tabelas necessárias para o sistema de escolas"""
+        try:
+            cursor = self.connection.cursor()
+            
+            # Tabela Escola
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS escola (
+                    id_escola INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nome_escola TEXT NOT NULL,
+                    categoria_escola TEXT NOT NULL CHECK(categoria_escola IN ('publica', 'privada')),
+                    uf_escola TEXT NOT NULL,
+                    bairro_escola TEXT NOT NULL
+                )
+            ''')
+            
+            # Tabela Usuario
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS usuario (
+                    id_user INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id_escola INTEGER NOT NULL,
+                    nome_user TEXT NOT NULL,
+                    username_user TEXT UNIQUE NOT NULL,
+                    email_user TEXT UNIQUE NOT NULL,
+                    criado_user TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (id_escola) REFERENCES escola(id_escola)
+                )
+            ''')
+            
+            # Tabela Publicacao
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS publicacao (
+                    id_publi INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id_user INTEGER NOT NULL,
+                    id_escola INTEGER NOT NULL,
+                    titulo_publi TEXT NOT NULL,
+                    texto_publi TEXT NOT NULL,
+                    data_publi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    resolvido_publi BOOLEAN DEFAULT FALSE,
+                    FOREIGN KEY (id_user) REFERENCES usuario(id_user),
+                    FOREIGN KEY (id_escola) REFERENCES escola(id_escola)
+                )
+            ''')
+            
+            # Tabela Comentario
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS comentario (
+                    id_coment INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id_publi INTEGER NOT NULL,
+                    id_user INTEGER NOT NULL,
+                    texto_coment TEXT NOT NULL,
+                    data_coment TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (id_publi) REFERENCES publicacao(id_publi) ON DELETE CASCADE,
+                    FOREIGN KEY (id_user) REFERENCES usuario(id_user)
+                )
+            ''')
+            
+            # Criar índices para melhor performance
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_usuario_escola ON usuario(id_escola)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_publicacao_usuario ON publicacao(id_user)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_publicacao_escola ON publicacao(id_escola)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_comentario_publicacao ON comentario(id_publi)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_comentario_usuario ON comentario(id_user)')
+            
+            self.connection.commit()
+            print("✅ Tabelas do sistema de escolas criadas/verificadas com sucesso!")
+            
+        except Exception as e:
+            print(f"❌ Erro ao criar tabelas do sistema de escolas: {e}")
     
-    id_user = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_escola = db.Column(db.Integer, db.ForeignKey('escola.id_escola'), nullable=False)
-    nome_user = db.Column(db.String(100), nullable=False)
-    username_user = db.Column(db.String(20), unique=True, nullable=False)
-    email_user = db.Column(db.String(100), unique=True, nullable=False)
-    criado_user = db.Column(db.DateTime, default=datetime.utcnow)
+    def insert_initial_data(self):
+        """Insere escolas iniciais"""
+        try:
+            cursor = self.connection.cursor()
+            
+            # Verificar se já existem escolas para não duplicar
+            cursor.execute("SELECT COUNT(*) FROM escola")
+            count = cursor.fetchone()[0]
+            print(f"📊 Escolas no banco: {count}")
+            
+            if count == 0:
+                print("📥 Inserindo escolas iniciais...")
+                
+                escolas_sp = [
+                    ('Escola Estadual Professor Doutor José Augusto Lopes Borges', 'publica', 'SP', 'Butantã'),
+                    ('Colégio Bandeirantes', 'privada', 'SP', 'Morumbi'),
+                    ('Escola Estadual Professor Carlos Alberto de Oliveira', 'publica', 'SP', 'Ipiranga'),
+                    ('Colégio Dante Alighieri', 'privada', 'SP', 'Cerqueira César'),
+                    ('Escola Municipal Professor Lourenço Filho', 'publica', 'SP', 'Tatuapé'),
+                    ('Colégio Santa Cruz', 'privada', 'SP', 'Alto de Pinheiros'),
+                    ('Escola Estadual Professor Antônio Maria Moura', 'publica', 'SP', 'Vila Mariana'),
+                    ('Colégio Vértice', 'privada', 'SP', 'Campo Belo'),
+                    ('Escola Municipal Professor Anísio Teixeira', 'publica', 'SP', 'Jardim Ângela'),
+                    ('Colégio Magno', 'privada', 'SP', 'Jardim Marajoara'),
+                    ('Fundação Escola de Comércio Álvares Penteado', 'privada', 'SP', 'Liberdade')
+                ]
+                
+                escolas_rj = [
+                    ('Colégio Santo Inácio', 'privada', 'RJ', 'Botafogo'),
+                    ('Escola Municipal Francis Hime', 'publica', 'RJ', 'Jacarepaguá'),
+                    ('Colégio pH', 'privada', 'RJ', 'Leblon'),
+                    ('Escola Estadual Orsina da Fonseca', 'publica', 'RJ', 'Tijuca'),
+                    ('Colégio Cruzeiro', 'privada', 'RJ', 'Centro'),
+                    ('Escola Municipal Pernambuco', 'publica', 'RJ', 'Higienópolis'),
+                    ('Colégio São Bento', 'privada', 'RJ', 'Centro'),
+                    ('Escola Estadual Professor Augusto Ruschi', 'publica', 'RJ', 'Tijuca'),
+                    ('Colégio Mopi', 'privada', 'RJ', 'Tijuca'),
+                    ('Escola Municipal Chile', 'publica', 'RJ', 'Copacabana')
+                ]
+                
+                cursor.executemany(
+                    "INSERT INTO escola (nome_escola, categoria_escola, uf_escola, bairro_escola) VALUES (?, ?, ?, ?)",
+                    escolas_sp + escolas_rj
+                )
+                
+                self.connection.commit()
+                print("✅ Escolas iniciais inseridas com sucesso!")
+            else:
+                print("✅ Escolas já existem no banco.")
+            
+        except Exception as e:
+            print(f"❌ Erro ao inserir escolas iniciais: {e}")
     
-    publicacoes = db.relationship('Publicacao', backref='usuario', lazy=True)
-    comentarios = db.relationship('Comentario', backref='usuario', lazy=True)
-
-class Publicacao(db.Model):
-    __tablename__ = 'publicacao'
+    # ========== MÉTODOS PARA ESCOLAS ==========
     
-    id_publi = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_user = db.Column(db.Integer, db.ForeignKey('usuario.id_user'), nullable=False)
-    id_escola = db.Column(db.Integer, db.ForeignKey('escola.id_escola'), nullable=False)
-    titulo_publi = db.Column(db.String(200), nullable=False)
-    texto_publi = db.Column(db.Text, nullable=False)
-    data_publi = db.Column(db.DateTime, default=datetime.utcnow)
-    resolvido_publi = db.Column(db.Boolean, default=False)
+    def buscar_escolas(self):
+        """Busca todas as escolas"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM escola ORDER BY nome_escola")
+            escolas = [dict(row) for row in cursor.fetchall()]
+            return escolas
+        except Exception as e:
+            print(f"❌ Erro ao buscar escolas: {e}")
+            return []
     
-    comentarios = db.relationship('Comentario', backref='publicacao', lazy=True)
-
-class Comentario(db.Model):
-    __tablename__ = 'comentario'
+    def buscar_escola_por_id(self, id_escola):
+        """Busca uma escola específica por ID"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM escola WHERE id_escola = ?", (id_escola,))
+            escola = cursor.fetchone()
+            return dict(escola) if escola else None
+        except Exception as e:
+            print(f"❌ Erro ao buscar escola: {e}")
+            return None
     
-    id_coment = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id_publi = db.Column(db.Integer, db.ForeignKey('publicacao.id_publi'), nullable=False)
-    id_user = db.Column(db.Integer, db.ForeignKey('usuario.id_user'), nullable=False)
-    texto_coment = db.Column(db.Text, nullable=False)
-    data_coment = db.Column(db.DateTime, default=datetime.utcnow)
-
-def init_db(app):
-    """Inicializa o banco de dados com o app Flask"""
-    db.init_app(app)
-    
-    with app.app_context():
-        db.create_all()
-        popular_escolas()
-
-def popular_escolas():
-    """Popula a tabela de escolas com dados iniciais"""
-    if Escola.query.count() == 0:
-        escolas_sp = [
-            ('Escola Estadual Professor Doutor José Augusto Lopes Borges', 'publica', 'SP', 'Butantã'),
-            ('Colégio Bandeirantes', 'privada', 'SP', 'Morumbi'),
-            ('Escola Estadual Professor Carlos Alberto de Oliveira', 'publica', 'SP', 'Ipiranga'),
-            ('Colégio Dante Alighieri', 'privada', 'SP', 'Cerqueira César'),
-            ('Escola Municipal Professor Lourenço Filho', 'publica', 'SP', 'Tatuapé'),
-            ('Colégio Santa Cruz', 'privada', 'SP', 'Alto de Pinheiros'),
-            ('Escola Estadual Professor Antônio Maria Moura', 'publica', 'SP', 'Vila Mariana'),
-            ('Colégio Vértice', 'privada', 'SP', 'Campo Belo'),
-            ('Escola Municipal Professor Anísio Teixeira', 'publica', 'SP', 'Jardim Ângela'),
-            ('Colégio Magno', 'privada', 'SP', 'Jardim Marajoara'),
-            ('Fundação Escola de Comércio Álvares Penteado', 'privada', 'SP', 'Liberdade')
-        ]
-        
-        escolas_rj = [
-            ('Colégio Santo Inácio', 'privada', 'RJ', 'Botafogo'),
-            ('Escola Municipal Francis Hime', 'publica', 'RJ', 'Jacarepaguá'),
-            ('Colégio pH', 'privada', 'RJ', 'Leblon'),
-            ('Escola Estadual Orsina da Fonseca', 'publica', 'RJ', 'Tijuca'),
-            ('Colégio Cruzeiro', 'privada', 'RJ', 'Centro'),
-            ('Escola Municipal Pernambuco', 'publica', 'RJ', 'Higienópolis'),
-            ('Colégio São Bento', 'privada', 'RJ', 'Centro'),
-            ('Escola Estadual Professor Augusto Ruschi', 'publica', 'RJ', 'Tijuca'),
-            ('Colégio Mopi', 'privada', 'RJ', 'Tijuca'),
-            ('Escola Municipal Chile', 'publica', 'RJ', 'Copacabana')
-        ]
-        
-        for escola in escolas_sp + escolas_rj:
-            nova_escola = Escola(
-                nome_escola=escola[0],
-                categoria_escola=escola[1],
-                uf_escola=escola[2],
-                bairro_escola=escola[3]
+    def criar_escola(self, nome_escola, categoria_escola, uf_escola, bairro_escola):
+        """Cria uma nova escola"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO escola (nome_escola, categoria_escola, uf_escola, bairro_escola) VALUES (?, ?, ?, ?)",
+                (nome_escola, categoria_escola, uf_escola, bairro_escola)
             )
-            db.session.add(nova_escola)
-        
-        db.session.commit()
-        print("Tabela de escolas populada com dados iniciais!")
+            self.connection.commit()
+            return cursor.lastrowid
+        except Exception as e:
+            print(f"❌ Erro ao criar escola: {e}")
+            return None
+    
+    # ========== MÉTODOS PARA USUÁRIOS ==========
+    
+    def buscar_usuarios(self):
+        """Busca todos os usuários"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT u.*, e.nome_escola 
+                FROM usuario u 
+                LEFT JOIN escola e ON u.id_escola = e.id_escola 
+                ORDER BY u.nome_user
+            ''')
+            usuarios = [dict(row) for row in cursor.fetchall()]
+            return usuarios
+        except Exception as e:
+            print(f"❌ Erro ao buscar usuários: {e}")
+            return []
+    
+    def buscar_usuario_por_id(self, id_user):
+        """Busca um usuário específico por ID"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT u.*, e.nome_escola 
+                FROM usuario u 
+                LEFT JOIN escola e ON u.id_escola = e.id_escola 
+                WHERE u.id_user = ?
+            ''', (id_user,))
+            usuario = cursor.fetchone()
+            return dict(usuario) if usuario else None
+        except Exception as e:
+            print(f"❌ Erro ao buscar usuário: {e}")
+            return None
+    
+    def criar_usuario(self, id_escola, nome_user, username_user, email_user):
+        """Cria um novo usuário"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO usuario (id_escola, nome_user, username_user, email_user) VALUES (?, ?, ?, ?)",
+                (id_escola, nome_user, username_user, email_user)
+            )
+            self.connection.commit()
+            return cursor.lastrowid
+        except Exception as e:
+            print(f"❌ Erro ao criar usuário: {e}")
+            return None
+    
+    # ========== MÉTODOS PARA PUBLICAÇÕES ==========
+    
+    def buscar_publicacoes(self):
+        """Busca todas as publicações"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT p.*, u.nome_user, e.nome_escola 
+                FROM publicacao p 
+                LEFT JOIN usuario u ON p.id_user = u.id_user 
+                LEFT JOIN escola e ON p.id_escola = e.id_escola 
+                ORDER BY p.data_publi DESC
+            ''')
+            publicacoes = [dict(row) for row in cursor.fetchall()]
+            return publicacoes
+        except Exception as e:
+            print(f"❌ Erro ao buscar publicações: {e}")
+            return []
+    
+    def buscar_publicacao_por_id(self, id_publi):
+        """Busca uma publicação específica por ID"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT p.*, u.nome_user, e.nome_escola 
+                FROM publicacao p 
+                LEFT JOIN usuario u ON p.id_user = u.id_user 
+                LEFT JOIN escola e ON p.id_escola = e.id_escola 
+                WHERE p.id_publi = ?
+            ''', (id_publi,))
+            publicacao = cursor.fetchone()
+            return dict(publicacao) if publicacao else None
+        except Exception as e:
+            print(f"❌ Erro ao buscar publicação: {e}")
+            return None
+    
+    def criar_publicacao(self, id_user, id_escola, titulo_publi, texto_publi):
+        """Cria uma nova publicação"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO publicacao (id_user, id_escola, titulo_publi, texto_publi) VALUES (?, ?, ?, ?)",
+                (id_user, id_escola, titulo_publi, texto_publi)
+            )
+            self.connection.commit()
+            return cursor.lastrowid
+        except Exception as e:
+            print(f"❌ Erro ao criar publicação: {e}")
+            return None
+    
+    def buscar_publicacoes_por_escola(self, id_escola):
+        """Busca publicações de uma escola específica"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT p.*, u.nome_user 
+                FROM publicacao p 
+                LEFT JOIN usuario u ON p.id_user = u.id_user 
+                WHERE p.id_escola = ? 
+                ORDER BY p.data_publi DESC
+            ''', (id_escola,))
+            publicacoes = [dict(row) for row in cursor.fetchall()]
+            return publicacoes
+        except Exception as e:
+            print(f"❌ Erro ao buscar publicações da escola: {e}")
+            return []
+    
+    # ========== MÉTODOS PARA COMENTÁRIOS ==========
+    
+    def buscar_comentarios_por_publicacao(self, id_publi):
+        """Busca comentários de uma publicação específica"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT c.*, u.nome_user 
+                FROM comentario c 
+                LEFT JOIN usuario u ON c.id_user = u.id_user 
+                WHERE c.id_publi = ? 
+                ORDER BY c.data_coment ASC
+            ''', (id_publi,))
+            comentarios = [dict(row) for row in cursor.fetchall()]
+            return comentarios
+        except Exception as e:
+            print(f"❌ Erro ao buscar comentários: {e}")
+            return []
+    
+    def criar_comentario(self, id_publi, id_user, texto_coment):
+        """Cria um novo comentário"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO comentario (id_publi, id_user, texto_coment) VALUES (?, ?, ?)",
+                (id_publi, id_user, texto_coment)
+            )
+            self.connection.commit()
+            return cursor.lastrowid
+        except Exception as e:
+            print(f"❌ Erro ao criar comentário: {e}")
+            return None
+    
+    def close(self):
+        """Fecha a conexão com o banco"""
+        if self.connection:
+            self.connection.close()
+            print("✅ Conexão com SQLite (cadDB) fechada.")
+
+# Instância global do banco de dados do sistema de escolas
+database = Database()
+
+def get_db():
+    return database

@@ -1,36 +1,33 @@
 # app.py
 from flask import Flask, render_template, request, jsonify
 from formDB import get_db as get_form_db
-from cadDB import db, init_db, Escola, Usuario, Publicacao, Comentario
+from cadDB import get_db as get_cad_db
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sistema_escolas.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'sua-chave-secreta-aqui'
 
 # Inicializa ambos os bancos de dados
-form_db = get_form_db()
-init_db(app)
+form_db = get_form_db()  # Sistema de bullying
+cad_db = get_cad_db()    # Sistema de escolas
 
 @app.route('/')
 def index():
     """Página inicial"""
     try:
         # Estatísticas do sistema de escolas
-        total_escolas = Escola.query.count()
-        total_usuarios = Usuario.query.count()
-        total_publicacoes = Publicacao.query.count()
+        escolas = cad_db.buscar_escolas()
+        usuarios = cad_db.buscar_usuarios()
+        publicacoes = cad_db.buscar_publicacoes()
         
         # Estatísticas do sistema de bullying
         stats_bullying = form_db.buscar_estatisticas()
         
         # Últimas publicações
-        ultimas_publicacoes = Publicacao.query.order_by(Publicacao.data_publi.desc()).limit(5).all()
+        ultimas_publicacoes = publicacoes[:5] if publicacoes else []
         
         return render_template('estatico/index.html', 
-                             total_escolas=total_escolas,
-                             total_usuarios=total_usuarios,
-                             total_publicacoes=total_publicacoes,
+                             total_escolas=len(escolas),
+                             total_usuarios=len(usuarios),
+                             total_publicacoes=len(publicacoes),
                              ultimas_publicacoes=ultimas_publicacoes,
                              stats_bullying=stats_bullying)
     except Exception as e:
@@ -118,8 +115,8 @@ def salvar_resposta():
         print(f"❌ Erro geral: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
-@app.route('/estatisticas')
-def estatisticas():
+@app.route('/estatisticas-bullying')
+def estatisticas_bullying():
     """Página de estatísticas do sistema de bullying"""
     try:
         stats = form_db.buscar_estatisticas()
@@ -134,7 +131,7 @@ def estatisticas():
 def listar_escolas():
     """Lista todas as escolas"""
     try:
-        escolas = Escola.query.all()
+        escolas = cad_db.buscar_escolas()
         return render_template('variavel/escolas/escolas.html', escolas=escolas)
     except Exception as e:
         print(f"❌ Erro ao carregar escolas: {e}")
@@ -144,14 +141,20 @@ def listar_escolas():
 def detalhes_escola(id):
     """Detalhes de uma escola específica"""
     try:
-        escola = Escola.query.get_or_404(id)
-        publicacoes = Publicacao.query.filter_by(id_escola=id).order_by(Publicacao.data_publi.desc()).all()
-        usuarios = Usuario.query.filter_by(id_escola=id).all()
+        escola = cad_db.buscar_escola_por_id(id)
+        if not escola:
+            return "Escola não encontrada", 404
+            
+        publicacoes = cad_db.buscar_publicacoes_por_escola(id)
+        usuarios = cad_db.buscar_usuarios()  # Filtraremos por escola no template ou criaremos método específico
+        
+        # Filtrar usuários por escola
+        usuarios_escola = [u for u in usuarios if u['id_escola'] == id]
         
         return render_template('variavel/escolas/detalhes_escola.html', 
                              escola=escola, 
                              publicacoes=publicacoes,
-                             usuarios=usuarios)
+                             usuarios=usuarios_escola)
     except Exception as e:
         print(f"❌ Erro ao carregar escola: {e}")
         return "Escola não encontrada", 404
@@ -160,7 +163,7 @@ def detalhes_escola(id):
 def listar_usuarios():
     """Lista todos os usuários"""
     try:
-        usuarios = Usuario.query.all()
+        usuarios = cad_db.buscar_usuarios()
         return render_template('variavel/usuarios/usuarios.html', usuarios=usuarios)
     except Exception as e:
         print(f"❌ Erro ao carregar usuários: {e}")
@@ -171,22 +174,23 @@ def novo_usuario():
     """Cria um novo usuário"""
     if request.method == 'POST':
         try:
-            usuario = Usuario(
+            id_user = cad_db.criar_usuario(
                 id_escola=request.form['id_escola'],
                 nome_user=request.form['nome_user'],
                 username_user=request.form['username_user'],
                 email_user=request.form['email_user']
             )
-            db.session.add(usuario)
-            db.session.commit()
-            print(f"✅ Novo usuário criado: {usuario.nome_user}")
-            return jsonify({'success': True, 'message': 'Usuário criado com sucesso!'})
+            if id_user:
+                print(f"✅ Novo usuário criado com ID: {id_user}")
+                return jsonify({'success': True, 'message': 'Usuário criado com sucesso!'})
+            else:
+                return jsonify({'success': False, 'error': 'Erro ao criar usuário'})
         except Exception as e:
             print(f"❌ Erro ao criar usuário: {e}")
             return jsonify({'success': False, 'error': str(e)})
     
     try:
-        escolas = Escola.query.all()
+        escolas = cad_db.buscar_escolas()
         return render_template('variavel/usuarios/novo_usuario.html', escolas=escolas)
     except Exception as e:
         print(f"❌ Erro ao carregar formulário de usuário: {e}")
@@ -196,7 +200,7 @@ def novo_usuario():
 def listar_publicacoes():
     """Lista todas as publicações"""
     try:
-        publicacoes = Publicacao.query.order_by(Publicacao.data_publi.desc()).all()
+        publicacoes = cad_db.buscar_publicacoes()
         return render_template('variavel/publicacoes/publicacoes.html', publicacoes=publicacoes)
     except Exception as e:
         print(f"❌ Erro ao carregar publicações: {e}")
@@ -207,23 +211,24 @@ def nova_publicacao():
     """Cria uma nova publicação"""
     if request.method == 'POST':
         try:
-            publicacao = Publicacao(
+            id_publi = cad_db.criar_publicacao(
                 id_user=request.form['id_user'],
                 id_escola=request.form['id_escola'],
                 titulo_publi=request.form['titulo_publi'],
                 texto_publi=request.form['texto_publi']
             )
-            db.session.add(publicacao)
-            db.session.commit()
-            print(f"✅ Nova publicação criada: {publicacao.titulo_publi}")
-            return jsonify({'success': True, 'message': 'Publicação criada com sucesso!'})
+            if id_publi:
+                print(f"✅ Nova publicação criada com ID: {id_publi}")
+                return jsonify({'success': True, 'message': 'Publicação criada com sucesso!'})
+            else:
+                return jsonify({'success': False, 'error': 'Erro ao criar publicação'})
         except Exception as e:
             print(f"❌ Erro ao criar publicação: {e}")
             return jsonify({'success': False, 'error': str(e)})
     
     try:
-        usuarios = Usuario.query.all()
-        escolas = Escola.query.all()
+        usuarios = cad_db.buscar_usuarios()
+        escolas = cad_db.buscar_escolas()
         return render_template('variavel/publicacoes/nova_publicacao.html', 
                              usuarios=usuarios, 
                              escolas=escolas)
@@ -235,8 +240,11 @@ def nova_publicacao():
 def detalhes_publicacao(id):
     """Detalhes de uma publicação específica"""
     try:
-        publicacao = Publicacao.query.get_or_404(id)
-        comentarios = Comentario.query.filter_by(id_publi=id).order_by(Comentario.data_coment.desc()).all()
+        publicacao = cad_db.buscar_publicacao_por_id(id)
+        if not publicacao:
+            return "Publicação não encontrada", 404
+            
+        comentarios = cad_db.buscar_comentarios_por_publicacao(id)
         
         return render_template('variavel/publicacoes/detalhes_publicacao.html', 
                              publicacao=publicacao, 
@@ -245,20 +253,32 @@ def detalhes_publicacao(id):
         print(f"❌ Erro ao carregar publicação: {e}")
         return "Publicação não encontrada", 404
 
+@app.route('/comentario/novo', methods=['POST'])
+def novo_comentario():
+    """Cria um novo comentário"""
+    try:
+        id_coment = cad_db.criar_comentario(
+            id_publi=request.form['id_publi'],
+            id_user=request.form['id_user'],
+            texto_coment=request.form['texto_coment']
+        )
+        if id_coment:
+            print(f"✅ Novo comentário criado com ID: {id_coment}")
+            return jsonify({'success': True, 'message': 'Comentário criado com sucesso!'})
+        else:
+            return jsonify({'success': False, 'error': 'Erro ao criar comentário'})
+    except Exception as e:
+        print(f"❌ Erro ao criar comentário: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
 # ========== API REST ENDPOINTS ==========
 
 @app.route('/api/escolas')
 def api_escolas():
     """API para listar escolas"""
     try:
-        escolas = Escola.query.all()
-        return jsonify([{
-            'id_escola': e.id_escola,
-            'nome_escola': e.nome_escola,
-            'categoria_escola': e.categoria_escola,
-            'uf_escola': e.uf_escola,
-            'bairro_escola': e.bairro_escola
-        } for e in escolas])
+        escolas = cad_db.buscar_escolas()
+        return jsonify(escolas)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -266,14 +286,8 @@ def api_escolas():
 def api_usuarios():
     """API para listar usuários"""
     try:
-        usuarios = Usuario.query.all()
-        return jsonify([{
-            'id_user': u.id_user,
-            'nome_user': u.nome_user,
-            'username_user': u.username_user,
-            'email_user': u.email_user,
-            'escola': u.escola.nome_escola if u.escola else 'N/A'
-        } for u in usuarios])
+        usuarios = cad_db.buscar_usuarios()
+        return jsonify(usuarios)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -281,16 +295,8 @@ def api_usuarios():
 def api_publicacoes():
     """API para listar publicações"""
     try:
-        publicacoes = Publicacao.query.all()
-        return jsonify([{
-            'id_publi': p.id_publi,
-            'titulo_publi': p.titulo_publi,
-            'texto_publi': p.texto_publi,
-            'data_publi': p.data_publi.isoformat(),
-            'resolvido_publi': p.resolvido_publi,
-            'usuario': p.usuario.nome_user,
-            'escola': p.escola.nome_escola
-        } for p in publicacoes])
+        publicacoes = cad_db.buscar_publicacoes()
+        return jsonify(publicacoes)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -307,13 +313,17 @@ def api_estatisticas_bullying():
 def api_comentarios(id_publicacao):
     """API para listar comentários de uma publicação"""
     try:
-        comentarios = Comentario.query.filter_by(id_publi=id_publicacao).all()
-        return jsonify([{
-            'id_coment': c.id_coment,
-            'texto_coment': c.texto_coment,
-            'data_coment': c.data_coment.isoformat(),
-            'usuario': c.usuario.nome_user
-        } for c in comentarios])
+        comentarios = cad_db.buscar_comentarios_por_publicacao(id_publicacao)
+        return jsonify(comentarios)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/escola/<int:id>/publicacoes')
+def api_publicacoes_escola(id):
+    """API para listar publicações de uma escola específica"""
+    try:
+        publicacoes = cad_db.buscar_publicacoes_por_escola(id)
+        return jsonify(publicacoes)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
