@@ -1,0 +1,298 @@
+/* formulario.css - Estilos específicos do formulário com tema verde e fonte Inter */
+:root {
+    --primary-green: #1a5f3e;
+    --secondary-green: #2d7a52;
+    --light-green: #e8f5e9;
+    --accent-green: #4caf50;
+    --dark-green: #0d3b1e;
+    --text-dark: #2d3748;
+    --text-light: #718096;
+    --white: #ffffff;
+    --border-radius: 16px;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Header - Garantir que herde os estilos corretos */
+.navbar.bg-primary-custom {
+    background-color: var(--primary-green) !important;
+}
+
+.navbar-brand {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+    margin: 0 0.25rem;
+    border-radius: var(--border-radius);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Hero Section do Formulário */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 0;
+    margin: 2rem auto;
+    max-width: 1200px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(26, 95, 62, 0.15) 0%, transparent 50%);
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* Restante do CSS do formulário mantendo a mesma estrutura... */
+
+/* Seção do Formulário */
+.form-section {
+    background: linear-gradient(135deg, var(--light-green) 0%, #f8f9fa 100%);
+    min-height: 70vh;
+}
+
+.form-card {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: none;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.card-header {
+    border-bottom: none;
+    background-color: var(--primary-green);
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+}
+
+.question-title {
+    color: var(--primary-green);
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.option-card {
+    margin-left: 15px;
+    padding: 1rem 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.option-card:hover {
+    border-color: var(--primary-green);
+    background-color: rgba(26, 95, 62, 0.05);
+    transform: translateY(-2px);
+}
+
+.option-card .form-check-input:checked {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}
+
+.option-card .form-check-label {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 400;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.pergunta {
+    transition: all 0.4s ease-in-out;
+}
+
+.pergunta-ativa {
+    display: block !important;
+    animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Progress Bar */
+.progress {
+    border-radius: var(--border-radius);
+    background-color: #e9ecef;
+    height: 10px;
+}
+
+.progress-bar {
+    border-radius: var(--border-radius);
+    transition: width 0.5s ease;
+    background-color: var(--primary-green);
+}
+
+/* Botões */
+.btn {
+    border-radius: var(--border-radius);
+    font-family: 'Comic Neue', cursive;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    border: none;
+    padding: 0.75rem 2rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 95, 62, 0.3);
+}
+
+.btn-outline-primary {
+    color: var(--primary-green);
+    border-color: var(--primary-green);
+    padding: 0.75rem 2rem;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    padding: 1rem 2rem;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Footer - Garantir estilos consistentes */
+.footer {
+    background-color: var(--dark-green) !important;
+    color: var(--white);
+    margin-top: auto;
+}
+
+.footer h5 {
+    color: var(--white);
+    font-family: 'Comic Neue', cursive;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer p, .footer li {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 400;
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.3s ease;
+    text-decoration: none;
+    font-family: 'Comic Neue', cursive;
+}
+
+.footer a:hover {
+    color: var(--white);
+    text-decoration: underline;
+}
+
+.footer hr {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 0;
+    }
+    
+    .display-5 {
+        font-size: 2rem;
+    }
+    
+    .form-card {
+        margin: 0 1rem;
+    }
+    
+    .option-card {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Utilitários */
+.text-primary-custom {
+    color: var(--primary-green) !important;
+}
+
+.bg-primary-custom {
+    background-color: var(--primary-green) !important;
+}
+
+.opacity-75 {
+    opacity: 0.75;
+}
+
+/* Estilos para o spinner de carregamento */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Melhorar a aparência das opções selecionadas */
+.option-card .form-check-input:checked ~ .form-check-label {
+    font-weight: 600;
+    color: var(--primary-green);
+}
+
+.option-card .form-check-input:checked {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+}

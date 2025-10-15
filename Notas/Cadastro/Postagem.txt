@@ -1,0 +1,27 @@
+-- Tabela Publicacao
+CREATE TABLE publicacao (
+    id_publi INT PRIMARY KEY AUTO_INCREMENT,
+    id_user INT NOT NULL,
+    id_escola INT NOT NULL, 
+    titulo_publi VARCHAR(200) NOT NULL,
+    texto_publi TEXT NOT NULL,
+    data_publi DATETIME DEFAULT CURRENT_TIMESTAMP,
+    resolvido_publi BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_user) REFERENCES usuario(id_user),
+    FOREIGN KEY (id_escola) REFERENCES escola(id_escola),
+    INDEX idx_user (id_user),
+    INDEX idx_escola (id_escola)
+);
+
+-- Tabela de Comentários
+CREATE TABLE comentario (
+    id_coment INT PRIMARY KEY AUTO_INCREMENT,
+    id_publi INT NOT NULL,
+    id_user INT NOT NULL,
+    texto_coment TEXT NOT NULL,
+    data_coment DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_publi) REFERENCES publicacao(id_publi) ON DELETE CASCADE,
+    FOREIGN KEY (id_user) REFERENCES usuario(id_user),
+    INDEX idx_publicacao (id_publi),  
+    INDEX idx_user (id_user)           
+);

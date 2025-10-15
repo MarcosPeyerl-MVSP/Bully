@@ -1,0 +1,370 @@
+<!-- Passo 1: Planejamento do Banco de Dados
+Primeiro, definimos a estrutura:
+
+sql
+-- Nome do banco: pesquisa_satisfacao
+-- Tabela: respostas
+-- Campos:
+--   id: INT, PRIMARY KEY, AUTO_INCREMENT
+--   nome: VARCHAR(100)
+--   email: VARCHAR(100)
+--   pontuacao: INT (1-10)
+--   comentarios: TEXT
+--   data_envio: DATETIME
+--   categoria: VARCHAR(50)
+ Passo 2: Criação do Banco e Tabelas
+Opção A: Via phpMyAdmin (Interface Gráfica)
+Acesse o phpMyAdmin no seu servidor
+
+Clique em "Novo" para criar um banco
+
+Nome: pesquisa_satisfacao
+
+Crie a tabela respostas com os campos acima
+
+Opção B: Via SQL (Linha de Comando)
+sql
+CREATE DATABASE pesquisa_satisfacao;
+
+USE pesquisa_satisfacao;
+
+CREATE TABLE respostas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100),
+    email VARCHAR(100),
+    pontuacao INT NOT NULL,
+    comentarios TEXT,
+    categoria VARCHAR(50) NOT NULL,
+    data_envio DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+Passo 3: Desenvolvimento do Formulário HTML
+html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa de Satisfação</title>
+    <style>
+        :root {
+            --primary-blue: #1a56db;
+            --light-blue: #e8f2ff;
+            --text-dark: #2d3748;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-blue);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #1e3a8a;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pesquisa de Satisfação</h1>
+        
+        // Exibir mensagens de sucesso/erro
+        // if (isset($_GET['status'])) {
+        //     if ($_GET['status'] == 'success') {
+        //         echo '<div class="message success">Obrigado! Sua pesquisa foi enviada com sucesso.</div>';
+        //     } elseif ($_GET['status'] == 'error') {
+        //         echo '<div class="message error">Erro ao enviar a pesquisa. Tente novamente.</div>';
+        //     }
+        // }
+        //
+
+        <form action="processar_pesquisa.php" method="POST">
+            <div class="form-group">
+                <label for="nome">Nome (opcional):</label>
+                <input type="text" id="nome" name="nome">
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail (opcional):</label>
+                <input type="email" id="email" name="email">
+            </div>
+
+            <div class="form-group">
+                <label for="categoria">Categoria do Serviço:</label>
+                <select id="categoria" name="categoria" required>
+                    <option value="">Selecione uma categoria</option>
+                    <option value="suporte">Suporte Técnico</option>
+                    <option value="vendas">Vendas</option>
+                    <option value="financeiro">Financeiro</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="pontuacao">Pontuação (1-10):</label>
+                <input type="number" id="pontuacao" name="pontuacao" min="1" max="10" required>
+            </div>
+
+            <div class="form-group">
+                <label for="comentarios">Comentários (opcional):</label>
+                <textarea id="comentarios" name="comentarios" placeholder="Deixe seus comentários aqui..."></textarea>
+            </div>
+
+            <button type="submit" class="btn">Enviar Pesquisa</button>
+        </form>
+    </div>
+</body>
+</html>
+ Passo 4: Script PHP para Processamento
+Crie o arquivo processar_pesquisa.php:
+
+php
+// processar_pesquisa.php
+
+// Configurações do banco de dados
+// $host = 'localhost'; // Ou o IP do seu servidor MySQL
+// $dbname = 'pesquisa_satisfacao';
+// $username = 'root'; Seu usuário do MySQL
+// $password = ''; Sua senha do MySQL
+
+// Verificar se o formulário foi submetido
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     try {
+        // Conexão com o banco de dados usando PDO
+        // $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+        
+        // Configurar PDO para lançar exceções em caso de erro
+        // $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Coletar e validar dados do formulário
+        // $nome = isset($_POST['nome']) ? trim($_POST['nome']) : '';
+        // $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+        // $categoria = isset($_POST['categoria']) ? trim($_POST['categoria']) : '';
+        // $pontuacao = isset($_POST['pontuacao']) ? intval($_POST['pontuacao']) : 0;
+        // $comentarios = isset($_POST['comentarios']) ? trim($_POST['comentarios']) : '';
+        
+        // // Validações básicas
+        // $erros = [];
+        
+        // if (empty($categoria)) {
+        //     $erros[] = "Categoria é obrigatória";
+        // }
+        
+        // if ($pontuacao < 1 || $pontuacao > 10) {
+        //     $erros[] = "Pontuação deve ser entre 1 e 10";
+        // }
+        
+        // if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        //     $erros[] = "E-mail inválido";
+        // }
+        
+        // Se não houver erros, inserir no banco
+        // if (empty($erros)) {
+        //     // Preparar a query SQL
+        //     $sql = "INSERT INTO respostas (nome, email, categoria, pontuacao, comentarios, data_envio) 
+        //             VALUES (:nome, :email, :categoria, :pontuacao, :comentarios, NOW())";
+            
+            // $stmt = $pdo->prepare($sql);
+            
+            // Vincular parâmetros
+            // $stmt->bindParam(':nome', $nome);
+            // $stmt->bindParam(':email', $email);
+            // $stmt->bindParam(':categoria', $categoria);
+            // $stmt->bindParam(':pontuacao', $pontuacao, PDO::PARAM_INT);
+            // $stmt->bindParam(':comentarios', $comentarios);
+            
+            // Executar a query
+            // if ($stmt->execute()) {
+                // Redirecionar com mensagem de sucesso
+//                 header('Location: index.html?status=success');
+//                 exit;
+//             } else {
+//                 throw new Exception("Erro ao executar a query");
+//             }
+//         } else {
+//             // Se houver erros de validação, redirecionar com mensagem de erro
+//             header('Location: index.html?status=error');
+//             exit;
+//         }
+        
+//     } catch (PDOException $e) {
+//         // Em caso de erro na conexão ou query
+//         error_log("Erro de banco de dados: " . $e->getMessage());
+//         header('Location: index.html?status=error');
+//         exit;
+        
+//     } catch (Exception $e) {
+//         // Outros erros
+//         error_log("Erro: " . $e->getMessage());
+//         header('Location: index.html?status=error');
+//         exit;
+//     }
+// } else {
+//     // Se alguém tentar acessar diretamente o arquivo sem enviar o formulário
+//     header('Location: index.html');
+//     exit;
+// }
+// ?>
+Passo 5: Medidas de Segurança Adicionais
+A. Validação Avançada
+php
+// Função para sanitizar dados
+function sanitize($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
+// Usando a função de sanitização
+$nome = sanitize($_POST['nome']);
+$email = sanitize($_POST['email']);
+B. Proteção contra SQL Injection
+O PDO com prepared statements já nos protege contra SQL injection, mas podemos adicionar mais validações:
+
+php
+// Validar categoria contra valores não permitidos
+$categorias_permitidas = ['suporte', 'vendas', 'financeiro', 'outro'];
+if (!in_array($categoria, $categorias_permitidas)) {
+    $erros[] = "Categoria inválida";
+}
+Passo 6: Testando o Sistema
+Teste 1: Dados Válidos
+Preencha todos os campos obrigatórios
+
+Use uma pontuação entre 1-10
+
+Verifique se os dados aparecem no banco
+
+Teste 2: Dados Inválidos
+Tente enviar sem categoria
+
+Use pontuação fora do intervalo
+
+Verifique se as mensagens de erro aparecem
+
+Teste 3: Segurança
+Tente inserir scripts nos campos
+
+Verifique se o código é escapado corretamente
+
+Passo 7: Debug e Logs
+Para ajudar no desenvolvimento, adicione logs:
+
+php
+// No início do arquivo PHP, adicione:
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Log personalizado
+function log_message($message) {
+    $log_file = 'logs/pesquisa.log';
+    $timestamp = date('Y-m-d H:i:s');
+    file_put_contents($log_file, "[$timestamp] $message\n", FILE_APPEND);
+}
+Passo 8: Visualização dos Dados (Opcional)
+Crie uma página para visualizar as respostas:
+
+php
+// visualizar_respostas.php
+// try {
+//     $pdo = new PDO("mysql:host=localhost;dbname=pesquisa_satisfacao;charset=utf8", "root", "");
+//     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+//     $stmt = $pdo->query("SELECT * FROM respostas ORDER BY data_envio DESC");
+//     $respostas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+//     echo "<h1>Respostas Recebidas</h1>";
+//     echo "<table border='1'>";
+//     echo "<tr><th>ID</th><th>Nome</th><th>E-mail</th><th>Categoria</th><th>Pontuação</th><th>Data</th></tr>";
+    
+//     foreach ($respostas as $resposta) {
+//         echo "<tr>";
+//         echo "<td>{$resposta['id']}</td>";
+//         echo "<td>{$resposta['nome']}</td>";
+//         echo "<td>{$resposta['email']}</td>";
+//         echo "<td>{$resposta['categoria']}</td>";
+//         echo "<td>{$resposta['pontuacao']}</td>";
+//         echo "<td>{$resposta['data_envio']}</td>";
+//         echo "</tr>";
+//     }
+    
+//     echo "</table>";
+    
+// } catch (PDOException $e) {
+//     echo "Erro: " . $e->getMessage();
+// }
+?> -->
