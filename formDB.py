@@ -1,3 +1,4 @@
+# formDB.py
 import sqlite3
 import os
 
@@ -213,6 +214,7 @@ class Database:
                 SELECT perfil_resp, COUNT(*) as total 
                 FROM UserRespostas 
                 GROUP BY perfil_resp
+                ORDER BY total DESC
             ''')
             estatisticas = [dict(row) for row in cursor.fetchall()]
             
@@ -228,6 +230,191 @@ class Database:
             print(f"❌ Erro ao buscar estatísticas: {e}")
             return {'perfis': [], 'total_geral': 0}
     
+    def buscar_todas_respostas(self):
+        """Busca todas as respostas dos usuários para análise detalhada"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT id_resp, data_resp, somaTotal_resp, perfil_resp 
+                FROM UserRespostas 
+                ORDER BY data_resp DESC
+            ''')
+            respostas = [dict(row) for row in cursor.fetchall()]
+            return respostas
+        except Exception as e:
+            print(f"❌ Erro ao buscar todas as respostas: {e}")
+            return []
+    
+    def buscar_distribuicao_pontuacao(self):
+        """Busca a distribuição das pontuações totais"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT 
+                    somaTotal_resp,
+                    COUNT(*) as quantidade,
+                    perfil_resp
+                FROM UserRespostas 
+                GROUP BY somaTotal_resp, perfil_resp
+                ORDER BY somaTotal_resp
+            ''')
+            distribuicao = [dict(row) for row in cursor.fetchall()]
+            return distribuicao
+        except Exception as e:
+            print(f"❌ Erro ao buscar distribuição de pontuação: {e}")
+            return []
+    
+    def buscar_estatisticas_detalhadas(self):
+        """Busca estatísticas detalhadas incluindo médias e ranges"""
+        try:
+            cursor = self.connection.cursor()
+            
+            # Estatísticas básicas
+            cursor.execute('''
+                SELECT 
+                    COUNT(*) as total_respostas,
+                    AVG(somaTotal_resp) as media_pontuacao,
+                    MIN(somaTotal_resp) as minima_pontuacao,
+                    MAX(somaTotal_resp) as maxima_pontuacao
+                FROM UserRespostas
+            ''')
+            stats_gerais = dict(cursor.fetchone())
+            
+            # Estatísticas por perfil
+            cursor.execute('''
+                SELECT 
+                    perfil_resp,
+                    COUNT(*) as total,
+                    AVG(somaTotal_resp) as media_pontuacao,
+                    MIN(somaTotal_resp) as minima_pontuacao,
+                    MAX(somaTotal_resp) as maxima_pontuacao
+                FROM UserRespostas 
+                GROUP BY perfil_resp
+                ORDER BY total DESC
+            ''')
+            stats_perfis = [dict(row) for row in cursor.fetchall()]
+            
+            # Distribuição temporal (últimos 30 dias)
+            cursor.execute('''
+                SELECT 
+                    DATE(data_resp) as data,
+                    COUNT(*) as respostas_dia
+                FROM UserRespostas 
+                WHERE data_resp >= date('now', '-30 days')
+                GROUP BY DATE(data_resp)
+                ORDER BY data DESC
+            ''')
+            timeline = [dict(row) for row in cursor.fetchall()]
+            
+            return {
+                'geral': stats_gerais,
+                'perfis': stats_perfis,
+                'timeline': timeline
+            }
+            
+        except Exception as e:
+            print(f"❌ Erro ao buscar estatísticas detalhadas: {e}")
+            return {
+                'geral': {},
+                'perfis': [],
+                'timeline': []
+            }
+    
+    def limpar_respostas(self):
+        """Limpa todas as respostas dos usuários (para testes)"""
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM UserRespostas")
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='UserRespostas'")
+            self.connection.commit()
+            print("🗑️ Todas as respostas foram limpas")
+            return True
+        except Exception as e:
+            print(f"❌ Erro ao limpar respostas: {e}")
+            return False
+    
+    def exportar_dados(self, formato='json'):
+        """Exporta os dados para análise externa"""
+        try:
+            dados = {}
+            
+            # Perguntas e opções
+            dados['perguntas'] = self.buscar_perguntas()
+            
+            # Respostas dos usuários
+            dados['respostas_usuarios'] = self.buscar_todas_respostas()
+            
+            # Estatísticas
+            dados['estatisticas'] = self.buscar_estatisticas_detalhadas()
+            
+            if formato == 'json':
+                import json
+                return json.dumps(dados, indent=2, ensure_ascii=False, default=str)
+            else:
+                return dados
+                
+        except Exception as e:
+            print(f"❌ Erro ao exportar dados: {e}")
+            return None
+    
+    def buscar_resumo_perfis(self):
+        """Busca um resumo simplificado dos perfis para gráficos rápidos"""
+        try:
+            cursor = self.connection.cursor()
+            
+            cursor.execute('''
+                SELECT 
+                    perfil_resp as perfil,
+                    COUNT(*) as quantidade,
+                    ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM UserRespostas), 2) as percentual
+                FROM UserRespostas 
+                GROUP BY perfil_resp
+                ORDER BY quantidade DESC
+            ''')
+            
+            resumo = [dict(row) for row in cursor.fetchall()]
+            return resumo
+            
+        except Exception as e:
+            print(f"❌ Erro ao buscar resumo de perfis: {e}")
+            return []
+    
+    def buscar_evolucao_temporal(self):
+        """Busca a evolução temporal das respostas"""
+        try:
+            cursor = self.connection.cursor()
+            
+            cursor.execute('''
+                SELECT 
+                    DATE(data_resp) as data,
+                    COUNT(*) as total_respostas,
+                    AVG(somaTotal_resp) as media_pontuacao,
+                    GROUP_CONCAT(perfil_resp) as perfis
+                FROM UserRespostas 
+                GROUP BY DATE(data_resp)
+                ORDER BY data DESC
+                LIMIT 30
+            ''')
+            
+            evolucao = []
+            for row in cursor.fetchall():
+                data_row = dict(row)
+                # Processar perfis para contar ocorrências
+                if data_row['perfis']:
+                    perfis_list = data_row['perfis'].split(',')
+                    contagem_perfis = {}
+                    for perfil in perfis_list:
+                        contagem_perfis[perfil] = contagem_perfis.get(perfil, 0) + 1
+                    data_row['distribuicao_perfis'] = contagem_perfis
+                
+                evolucao.append(data_row)
+            
+            return evolucao
+            
+        except Exception as e:
+            print(f"❌ Erro ao buscar evolução temporal: {e}")
+            return []
+    
     def close(self):
         """Fecha a conexão com o banco"""
         if self.connection:
@@ -238,4 +425,37 @@ class Database:
 database = Database()
 
 def get_db():
+    """Retorna a instância do banco de dados"""
     return database
+
+# Teste básico se executado diretamente
+if __name__ == "__main__":
+    db = Database()
+    
+    print("\n" + "="*50)
+    print("TESTE DO BANCO DE DADOS FORMDB")
+    print("="*50)
+    
+    # Testar busca de perguntas
+    perguntas = db.buscar_perguntas()
+    print(f"\n📋 Total de perguntas: {len(perguntas)}")
+    
+    for pergunta in perguntas:
+        print(f"  Pergunta {pergunta['id_perg']}: {pergunta['texto_perg']}")
+        for opcao in pergunta['opcoes']:
+            print(f"    - {opcao['texto_opcao']} ({opcao['pontuacao']} pontos)")
+    
+    # Testar estatísticas
+    stats = db.buscar_estatisticas()
+    print(f"\n📊 Estatísticas:")
+    print(f"  Total de respostas: {stats['total_geral']}")
+    for perfil in stats['perfis']:
+        print(f"  {perfil['perfil_resp']}: {perfil['total']}")
+    
+    # Testar resumo de perfis
+    resumo = db.buscar_resumo_perfis()
+    print(f"\n📈 Resumo de perfis:")
+    for item in resumo:
+        print(f"  {item['perfil']}: {item['quantidade']} ({item['percentual']}%)")
+    
+    print("\n✅ Teste do banco de dados concluído com sucesso!")

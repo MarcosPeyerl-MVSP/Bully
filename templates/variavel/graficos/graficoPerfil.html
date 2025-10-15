@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Perfis - Alerta Bullying</title>
+    <!-- Google Fonts - Comic Neue -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.6/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/style/estatico/index.css">
+    <style>
+        .graph-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8f2ff;
+        }
+        .graph-title {
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .graph-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .stats-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .btn-graph {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+            margin: 0.5rem;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+        }
+        .btn-graph:hover {
+            background-color: var(--dark-blue);
+            border-color: var(--dark-blue);
+            transform: translateY(-2px);
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+            color: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho / Navegação -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="/">
+                    <i class="bi bi-shield-shaded me-2"></i>Alerta Bullying
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/formulario">Questionário</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/grafico-perfis">Gráficos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/estatisticas-bullying">Estatísticas</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="py-5 bg-light-custom">
+        <div class="container">
+            <!-- Cabeçalho da Página -->
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h1 class="display-5 fw-bold text-primary-custom mb-3">
+                        <i class="bi bi-bar-chart-fill me-2"></i>Gráfico de Distribuição de Perfis
+                    </h1>
+                    <p class="lead">Visualize a distribuição dos perfis identificados através do nosso questionário anti-bullying</p>
+                </div>
+            </div>
+
+            <!-- Cartões de Estatísticas -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-number">{{ stats.total_geral }}</div>
+                        <div class="stats-label">Total de Respostas</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-number">{{ stats.perfis|length }}</div>
+                        <div class="stats-label">Perfis Identificados</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controles do Gráfico -->
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-graph" onclick="carregarGraficoBarras()">
+                            <i class="bi bi-bar-chart me-2"></i>Gráfico de Barras
+                        </button>
+                        <button type="button" class="btn btn-graph" onclick="carregarGraficoPizza()">
+                            <i class="bi bi-pie-chart me-2"></i>Gráfico de Pizza
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container do Gráfico -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="graph-container">
+                        <h3 class="graph-title" id="graphTitle">Distribuição de Perfis</h3>
+                        <div id="loadingSpinner" class="loading-spinner">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Carregando...</span>
+                            </div>
+                            <p class="mt-2">Carregando gráfico...</p>
+                        </div>
+                        <div id="graphContainer" style="display: none;">
+                            <img id="graphImage" class="graph-image" alt="Gráfico de distribuição de perfis">
+                        </div>
+                        <div id="errorMessage" class="alert alert-danger" style="display: none;">
+                            Erro ao carregar o gráfico. Tente novamente.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legenda dos Perfis -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="graph-container">
+                        <h4 class="graph-title">Legenda dos Perfis</h4>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="color-swatch me-3" style="width: 20px; height: 20px; background-color: #FF6B6B; border-radius: 4px;"></div>
+                                    <div>
+                                        <strong>Alheio à Problemática</strong>
+                                        <p class="small mb-0">Pouca experiência com bullying, precisa se informar mais</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="color-swatch me-3" style="width: 20px; height: 20px; background-color: #4ECDC4; border-radius: 4px;"></div>
+                                    <div>
+                                        <strong>Consciente mas Cauteloso</strong>
+                                        <p class="small mb-0">Reconhece o problema mas pode hesitar em agir</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="color-swatch me-3" style="width: 20px; height: 20px; background-color: #45B7D1; border-radius: 4px;"></div>
+                                    <div>
+                                        <strong>Atuante na Causa</strong>
+                                        <p class="small mb-0">Experiência próxima e postura proativa contra bullying</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Alerta Bullying</h5>
+                    <p>Um projeto acadêmico dedicado a combater o bullying e cyberbullying através da informação e suporte.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Links Úteis</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-decoration-none">Página Inicial</a></li>
+                        <li><a href="/formulario" class="text-decoration-none">Questionário</a></li>
+                        <li><a href="/grafico-perfis" class="text-decoration-none">Gráficos</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Recursos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/estatisticas-bullying" class="text-decoration-none">Estatísticas</a></li>
+                        <li><a href="/definicao" class="text-decoration-none">O que é Bullying</a></li>
+                        <li><a href="/identificar" class="text-decoration-none">Como Identificar</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center mb-0">&copy; 2025 Projeto Alerta Bullying. Desenvolvido para fins acadêmicos.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Carregar gráfico de barras por padrão
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarGraficoBarras();
+        });
+
+        function carregarGraficoBarras() {
+            carregarGrafico('/api/grafico/barras', 'Gráfico de Barras - Distribuição de Perfis');
+        }
+
+        function carregarGraficoPizza() {
+            carregarGrafico('/api/grafico/pizza', 'Gráfico de Pizza - Distribuição de Perfis');
+        }
+
+        function carregarGrafico(url, titulo) {
+            // Mostrar loading
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('graphContainer').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('graphTitle').textContent = titulo;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const img = document.getElementById('graphImage');
+                        img.src = data.graph_url;
+                        img.alt = titulo;
+                        
+                        // Esconder loading e mostrar gráfico
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                        document.getElementById('graphContainer').style.display = 'block';
+                    } else {
+                        throw new Error(data.error || 'Erro desconhecido');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar gráfico:', error);
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('errorMessage').style.display = 'block';
+                });
+        }
+
+        // Atualizar gráfico a cada 30 segundos se necessário
+        // setInterval(carregarGraficoBarras, 30000);
+    </script>
+</body>
+</html>
