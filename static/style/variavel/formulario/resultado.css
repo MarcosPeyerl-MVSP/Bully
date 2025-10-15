@@ -1,0 +1,361 @@
+/* resultado.css - Estilos específicos da página de resultado */
+:root {
+    --primary-blue: #1a56db;
+    --secondary-blue: #1e4a7c;
+    --light-blue: #e8f2ff;
+    --accent-blue: #3b82f6;
+    --dark-blue: #1e3a8a;
+    --text-dark: #2d3748;
+    --text-light: #718096;
+    --white: #ffffff;
+}
+
+/* Header - Exatamente igual ao index.css */
+.navbar.bg-primary-custom {
+    background-color: var(--primary-blue) !important;
+}
+
+.navbar-brand {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.navbar-nav .nav-link {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    margin: 0 0.2rem;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Hero Section - Exatamente igual ao index.css */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.05"><polygon points="1000,100 1000,0 0,100"/></svg>');
+    background-size: cover;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.display-4 {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Seção do Resultado - Mantendo o estilo do index.css */
+.form-section {
+    background-color: var(--light-blue) !important;
+    min-height: 70vh;
+}
+
+/* Cards de Resultado - Seguindo o padrão do index.css */
+.result-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    background: var(--white);
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(26, 86, 219, 0.15);
+}
+
+.card-header {
+    border-bottom: none;
+    background: transparent;
+}
+
+.result-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-blue);
+}
+
+.result-title {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.result-score {
+    margin-bottom: 2rem;
+}
+
+.result-description {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 400;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+}
+
+.result-actions {
+    margin-top: 2rem;
+}
+
+/* Info Box - Estilo consistente */
+.info-box {
+    background: var(--white);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.info-box h4 {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+}
+
+/* Escala de Pontuação - Estilo simplificado */
+.scale-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.scale-item {
+    text-align: center;
+    flex: 1;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin: 0 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    background: var(--white);
+}
+
+.scale-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(26, 86, 219, 0.15);
+}
+
+.scale-alheio {
+    border-left: 4px solid var(--accent-blue);
+}
+
+.scale-consciente {
+    border-left: 4px solid #ffc107;
+}
+
+.scale-atuante {
+    border-left: 4px solid #28a745;
+}
+
+.scale-title {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.scale-range {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+/* Cards de Estatística - Exatamente como no index.css */
+.stat-card {
+    border: none;
+    border-radius: 0.75rem;
+    background: var(--white);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary-blue);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(26, 86, 219, 0.15);
+}
+
+.stat-card .card-body {
+    padding: 1.5rem;
+}
+
+.stat-card i {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+}
+
+.stat-card h5 {
+    color: var(--text-dark);
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    color: var(--text-light);
+    font-family: 'Comic Neue', cursive;
+    font-weight: 400;
+    margin-bottom: 1rem;
+}
+
+/* Botões - Exatamente como no index.css */
+.btn {
+    border-radius: 0.5rem;
+    font-family: 'Comic Neue', cursive;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    padding: 0.75rem 2rem;
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-blue);
+    border-color: var(--dark-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 86, 219, 0.3);
+}
+
+.btn-outline-primary {
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+    background: transparent;
+    padding: 0.75rem 2rem;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    color: var(--white);
+}
+
+/* Footer - Exatamente como no index.css */
+.footer {
+    background-color: var(--dark-blue);
+    color: var(--white);
+}
+
+.footer h5 {
+    color: var(--white);
+    font-family: 'Comic Neue', cursive;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer p, .footer li {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 400;
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.3s ease;
+    text-decoration: none;
+    font-family: 'Comic Neue', cursive;
+}
+
+.footer a:hover {
+    color: var(--white);
+    text-decoration: underline;
+}
+
+/* Textos e Títulos - Consistente com index.css */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 700;
+}
+
+.lead {
+    font-family: 'Comic Neue', cursive;
+    font-weight: 400;
+}
+
+/* Responsividade - Seguindo o padrão do index.css */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .result-card {
+        margin: 0 1rem;
+    }
+    
+    .scale-info {
+        flex-direction: column;
+    }
+    
+    .scale-item {
+        margin: 0.5rem 0;
+    }
+    
+    .result-actions .btn {
+        margin-bottom: 1rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Utilitários */
+.text-primary-custom {
+    color: var(--primary-blue) !important;
+}
+
+.bg-primary-custom {
+    background-color: var(--primary-blue) !important;
+}
+
+.bg-light-custom {
+    background-color: var(--light-blue) !important;
+}
+
+/* Animações - Seguindo o index.css */
+.fade-in {
+    animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.result-card {
+    animation: fadeIn 0.8s ease-in;
+}
