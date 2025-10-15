@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, jsonify
 from formDB import get_db as get_form_db
 from cadDB import get_db as get_cad_db
+from perfilGrafico import grafico_manager
 
 app = Flask(__name__)
 
@@ -281,6 +282,19 @@ def novo_comentario():
         print(f"❌ Erro ao criar comentário: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
+@app.route('/grafico-perfis')
+def grafico_perfis():
+    """Página do gráfico de distribuição de perfis"""
+    try:
+        stats = form_db.buscar_estatisticas()
+        return render_template('variavel/graficos/graficoPerfil.html', 
+                             stats=stats,
+                             total_geral=stats.get('total_geral', 0))
+    except Exception as e:
+        print(f"❌ Erro ao carregar página de gráficos: {e}")
+        return render_template('variavel/graficos/graficoPerfil.html', 
+                             stats={'perfis': [], 'total_geral': 0})
+
 # ========== API REST ENDPOINTS ==========
 
 @app.route('/api/escolas')
@@ -336,6 +350,32 @@ def api_publicacoes_escola(id):
         return jsonify(publicacoes)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/grafico/barras')
+def api_grafico_barras():
+    """API para obter gráfico de barras"""
+    try:
+        graph_url = grafico_manager.gerar_grafico_perfis()
+        if graph_url:
+            return jsonify({'success': True, 'graph_url': graph_url})
+        else:
+            return jsonify({'success': False, 'error': 'Erro ao gerar gráfico'})
+    except Exception as e:
+        print(f"❌ Erro na API gráfico barras: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/grafico/pizza')
+def api_grafico_pizza():
+    """API para obter gráfico de pizza"""
+    try:
+        graph_url = grafico_manager.gerar_grafico_pizza()
+        if graph_url:
+            return jsonify({'success': True, 'graph_url': graph_url})
+        else:
+            return jsonify({'success': False, 'error': 'Erro ao gerar gráfico'})
+    except Exception as e:
+        print(f"❌ Erro na API gráfico pizza: {e}")
+        return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
