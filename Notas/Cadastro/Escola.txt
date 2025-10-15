@@ -1,0 +1,35 @@
+-- Tabela Escola
+CREATE TABLE escola (
+    id_escola INT PRIMARY KEY AUTO_INCREMENT,
+    nome_escola VARCHAR(150) NOT NULL,
+    categoria_escola ENUM('publica', 'privada') NOT NULL,
+    uf_escola CHAR(2) NOT NULL,
+    bairro_escola VARCHAR(100) NOT NULL,
+);
+
+-- Escolas de São Paulo
+INSERT INTO escola (nome_escola, categoria_escola, uf_escola, bairro_escola) VALUES
+('Escola Estadual Professor Doutor José Augusto Lopes Borges', 'publica', 'SP', 'Butantã'),
+('Colégio Bandeirantes', 'privada', 'SP', 'Morumbi'),
+('Escola Estadual Professor Carlos Alberto de Oliveira', 'publica', 'SP', 'Ipiranga'),
+('Colégio Dante Alighieri', 'privada', 'SP', 'Cerqueira César'),
+('Escola Municipal Professor Lourenço Filho', 'publica', 'SP', 'Tatuapé'),
+('Colégio Santa Cruz', 'privada', 'SP', 'Alto de Pinheiros'),
+('Escola Estadual Professor Antônio Maria Moura', 'publica', 'SP', 'Vila Mariana'),
+('Colégio Vértice', 'privada', 'SP', 'Campo Belo'),
+('Escola Municipal Professor Anísio Teixeira', 'publica', 'SP', 'Jardim Ângela'),
+('Colégio Magno', 'privada', 'SP', 'Jardim Marajoara'),
+(Fundação Escola de Comércio Álvares Penteado', 'privada', 'SP', 'Liberdade');
+
+-- Escolas do Rio de Janeiro
+INSERT INTO escola (nome_escola, categoria_escola, uf_escola, bairro_escola) VALUES
+('Colégio Santo Inácio', 'privada', 'RJ', 'Botafogo'),
+('Escola Municipal Francis Hime', 'publica', 'RJ', 'Jacarepaguá'),
+('Colégio pH', 'privada', 'RJ', 'Leblon'),
+('Escola Estadual Orsina da Fonseca', 'publica', 'RJ', 'Tijuca'),
+('Colégio Cruzeiro', 'privada', 'RJ', 'Centro'),
+('Escola Municipal Pernambuco', 'publica', 'RJ', 'Higienópolis'),
+('Colégio São Bento', 'privada', 'RJ', 'Centro'),
+('Escola Estadual Professor Augusto Ruschi', 'publica', 'RJ', 'Tijuca'),
+('Colégio Mopi', 'privada', 'RJ', 'Tijuca'),
+('Escola Municipal Chile', 'publica', 'RJ', 'Copacabana');
