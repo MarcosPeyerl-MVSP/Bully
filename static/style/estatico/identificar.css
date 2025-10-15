@@ -1,74 +1,102 @@
-/* como-identificar.css - Estilos específicos para a página "Como Identificar" */
-
-/* Variáveis de cores */
+/* identificar.css - Estilos específicos para a página "Como Identificar" */
 :root {
-    --primary-blue: #1a56db;
-    --secondary-blue: #1e4a7c;
-    --light-blue: #e8f2ff;
-    --accent-blue: #3b82f6;
-    --dark-blue: #1e3a8a;
+    --primary-green: #1a5f3e;
+    --secondary-green: #2d7a52;
+    --light-green: #e8f5e9;
+    --accent-green: #4caf50;
+    --dark-green: #0d3b1e;
     --text-dark: #2d3748;
     --text-light: #718096;
     --white: #ffffff;
+    --gray-light: #f8f9fa;
+    --border-radius: 16px;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.18);
+    --section-spacing: 4rem;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* Estilos Gerais */
 body {
-    font-family: 'Comic Neue', cursive;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: var(--text-dark);
     line-height: 1.6;
-}
-
-h1, h2, h3, h4, h5, h6, .navbar-brand {
-    font-family: 'Comic Neue', cursive;
-    font-weight: 700;
-}
-
-.lead, .card-text, p {
-    font-family: 'Comic Neue', cursive;
+    background-color: var(--gray-light);
     font-weight: 400;
 }
 
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.lead, .card-text, p {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
 .btn {
-    font-family: 'Comic Neue', cursive;
-    font-weight: 700;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: -0.01em;
 }
 
 .card-title {
-    font-family: 'Comic Neue', cursive;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.navbar-nav .nav-link {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+
+/* Navegação */
+.navbar.bg-primary-custom {
+    background-color: var(--primary-green) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
     font-weight: 700;
 }
 
 .navbar-nav .nav-link {
-    font-family: 'Comic Neue', cursive;
-    font-weight: 500;
-}
-
-/* Navegação */
-.navbar-brand {
-    font-size: 1.5rem;
-    letter-spacing: -0.5px;
-}
-
-.navbar-nav .nav-link {
-    padding: 0.5rem 1rem;
-    margin: 0 0.2rem;
-    border-radius: 0.375rem;
-    transition: all 0.3s ease;
+    padding: 0.75rem 1.25rem;
+    margin: 0 0.25rem;
+    border-radius: var(--border-radius);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
 }
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
     position: relative;
     overflow: hidden;
-    padding: 4rem 0;
+    padding: 5rem 0;
+    margin: 2rem auto;
+    max-width: 1200px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-top: calc(var(--section-spacing) - 1rem);
 }
 
 .hero-section::before {
@@ -78,161 +106,356 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.05"><polygon points="1000,100 1000,0 0,100"/></svg>');
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(26, 95, 62, 0.15) 0%, transparent 50%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.03"><polygon points="1000,100 1000,0 0,100"/></svg>');
     background-size: cover;
 }
 
 .hero-section .container {
     position: relative;
     z-index: 2;
+    padding: 0 2rem;
 }
 
 .display-4 {
     font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
-/* Cards */
-.card {
+.hero-section .lead {
+    font-size: 1.3rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.95;
+    font-weight: 400;
+}
+
+/* Conteúdo Principal */
+main {
+    padding: var(--section-spacing) 0;
+}
+
+/* Seções de Conteúdo */
+.content-section {
+    margin-bottom: var(--section-spacing);
+}
+
+.content-section h2 {
+    color: var(--primary-green);
+    margin-bottom: 2rem;
+    font-size: 2.2rem;
+    text-align: center;
+}
+
+.content-section .lead {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Cards de Sinais */
+.signs-card {
     border: none;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    height: 100%;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(26, 86, 219, 0.15);
+.signs-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
 }
 
-.card-body i {
-    color: var(--primary-blue);
+.signs-card .card-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+.signs-card i {
+    color: var(--primary-green);
+    margin-bottom: 1.5rem;
+    font-size: 3rem;
+}
+
+.signs-card .card-title {
+    color: var(--primary-green);
     margin-bottom: 1rem;
+    font-size: 1.3rem;
 }
 
-.card-header {
-    border-radius: 0.75rem 0.75rem 0 0 !important;
+.signs-card .card-text {
+    color: var(--text-light);
+    line-height: 1.6;
 }
 
-/* Listas */
-.list-group-item {
+/* Alertas Estilizados */
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
     border: none;
-    padding: 0.75rem 1rem;
-    transition: background-color 0.2s ease;
+    border-radius: var(--border-radius);
+    border-left: 6px solid #ffc107;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: var(--shadow);
 }
 
-.list-group-item:hover {
-    background-color: rgba(26, 86, 219, 0.05);
+.alert-warning h4 {
+    color: #856404;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.alert-warning p {
+    color: #856404;
+    margin-bottom: 0;
+    font-size: 1.1rem;
+}
+
+/* Listas de Sinais */
+.signs-list {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin: 2rem 0;
+}
+
+.signs-list h4 {
+    color: var(--primary-green);
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+}
+
+.signs-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.signs-list li {
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.75rem;
+    background: var(--light-green);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--primary-green);
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.signs-list li:hover {
+    transform: translateX(5px);
+    background: rgba(26, 95, 62, 0.1);
+}
+
+.signs-list li strong {
+    color: var(--primary-green);
+    font-weight: 600;
+}
+
+/* Seção de Ação */
+.action-section {
+    background: linear-gradient(135deg, var(--light-green) 0%, #f1f8e9 100%);
+    border-radius: var(--border-radius);
+    padding: 3rem 2rem;
+    margin: var(--section-spacing) 0;
+    text-align: center;
+}
+
+.action-section h3 {
+    color: var(--primary-green);
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.action-section .lead {
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    color: var(--text-dark);
+}
+
+/* Cards de Apoio */
+.support-card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    height: 100%;
+}
+
+.support-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+}
+
+.support-card .card-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+.support-card i {
+    color: var(--primary-green);
+    margin-bottom: 1.5rem;
+    font-size: 2.5rem;
+}
+
+.support-card .card-title {
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
 }
 
 /* Botões */
 .btn-primary {
-    background-color: var(--primary-blue);
-    border-color: var(--primary-blue);
-    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+    border: none;
+    padding: 0.875rem 2.25rem;
     font-weight: 600;
-    border-radius: 0.5rem;
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(26, 95, 62, 0.3);
 }
 
 .btn-primary:hover {
-    background-color: var(--dark-blue);
-    border-color: var(--dark-blue);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(26, 86, 219, 0.3);
+    background: linear-gradient(135deg, var(--secondary-green) 0%, var(--dark-green) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(26, 95, 62, 0.4);
 }
 
 .btn-outline-primary {
-    color: var(--primary-blue);
-    border-color: var(--primary-blue);
+    color: var(--primary-green);
+    border: 2px solid var(--primary-green);
+    background: transparent;
+    padding: 0.875rem 2.25rem;
     font-weight: 500;
-    border-radius: 0.5rem;
-    transition: all 0.3s ease;
 }
 
 .btn-outline-primary:hover {
-    background-color: var(--primary-blue);
-    border-color: var(--primary-blue);
-    transform: translateY(-2px);
-}
-
-/* Seções */
-.bg-light-custom {
-    background-color: var(--light-blue) !important;
-}
-
-/* Alertas */
-.alert-warning {
-    border: none;
-    border-radius: 0.75rem;
-    background-color: #fff3cd;
-    color: #856404;
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(26, 95, 62, 0.3);
 }
 
 /* Rodapé */
 .footer {
-    background-color: var(--dark-blue);
+    background-color: var(--dark-green);
     color: var(--white);
+    padding: 3rem 0 1.5rem;
+    margin-top: var(--section-spacing);
 }
 
 .footer h5 {
     color: var(--white);
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
 }
 
 .footer a {
     color: rgba(255, 255, 255, 0.8);
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
     text-decoration: none;
+    font-weight: 400;
 }
 
 .footer a:hover {
     color: var(--white);
-    text-decoration: underline;
+    text-decoration: none;
+    transform: translateX(5px);
 }
 
 /* Utilitários */
 .text-primary-custom {
-    color: var(--primary-blue) !important;
+    color: var(--primary-green) !important;
 }
 
 .bg-primary-custom {
-    background-color: var(--primary-blue) !important;
-}
-
-/* Ícones */
-.display-6 {
-    font-size: 2.5rem;
+    background-color: var(--primary-green) !important;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
     .hero-section {
-        padding: 3rem 0;
+        padding: 3rem 1.5rem;
+        margin: 1rem;
+        border-radius: 12px;
     }
     
     .display-4 {
         font-size: 2.5rem;
     }
     
-    .d-flex.align-items-center.justify-content-center {
-        flex-direction: column;
-        text-align: center;
+    .hero-section .lead {
+        font-size: 1.1rem;
     }
     
-    .d-flex.align-items-center.justify-content-center i {
-        margin-bottom: 1rem;
-        margin-right: 0 !important;
+    .signs-card .card-body,
+    .support-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .content-section h2 {
+        font-size: 1.8rem;
+    }
+    
+    .action-section {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 2.5rem 1rem;
+        margin: 0.5rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .signs-list {
+        padding: 1.5rem;
     }
 }
 
 /* Animações suaves */
 .fade-in {
-    animation: fadeIn 0.8s ease-in;
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Efeito de brilho sutil no hero */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
 }
