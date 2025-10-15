@@ -52,10 +52,20 @@ def definicao():
     """Definição"""
     return render_template('estatico/definicao.html')
 
+@app.route('/postagens')
+def postagens():
+    return render_template('variavel/postagens/postagens.html')
+
 @app.route('/identificar')
 def identificar():
     """Como identificar"""
     return render_template('estatico/identificar.html')
+# ========== ROTAS DE RECURSOS DE APOIO ==========
+
+@app.route('/apoio')
+def apoio():
+    return render_template('estatico/apoio.html')
+
 
 @app.route('/resultado')
 def resultado():

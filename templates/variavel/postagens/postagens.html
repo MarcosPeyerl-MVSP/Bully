@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denúncia de Cyberbullying - Bully</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1a56db;
+            --secondary-blue: #1e4a7c;
+            --light-blue: #e8f2ff;
+            --accent-blue: #3b82f6;
+            --dark-blue: #1e3a8a;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Comic Neue', cursive;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6, .navbar-brand {
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+        }
+
+        .lead, .card-text, p {
+            font-family: 'Comic Neue', cursive;
+            font-weight: 400;
+        }
+
+        .btn {
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+        }
+
+        .card-title {
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+        }
+
+        .denuncia-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            color: var(--white);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .denuncia-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.05"><polygon points="1000,100 1000,0 0,100"/></svg>');
+            background-size: cover;
+        }
+        
+        .form-section {
+            background: var(--white);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-blue);
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(26, 86, 219, 0.15);
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+        }
+        
+        .step.active .step-number {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+        
+        .step-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-align: center;
+            font-family: 'Comic Neue', cursive;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+        
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+        
+        .btn-denuncia {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-denuncia:hover {
+            background-color: var(--dark-blue);
+            border-color: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 86, 219, 0.3);
+            color: var(--white);
+        }
+        
+        .info-card {
+            background: var(--light-blue);
+            border-left: 4px solid var(--primary-blue);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .emergency-contact {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            margin-top: 2rem;
+            border-left: 4px solid #dc3545;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            font-family: 'Comic Neue', cursive;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.2rem rgba(26, 86, 219, 0.25);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="denuncia-header text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold fade-in">
+                <i class="fas fa-exclamation-triangle me-3"></i>
+                Denúncia de Cyberbullying
+            </h1>
+            <p class="lead fade-in">Sua voz é importante. Denuncie casos de cyberbullying de forma segura e anônima.</p>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <div class="container">
+        <!-- Indicador de Passos -->
+        <div class="step-indicator">
+            <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-label">Informações</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-label">Detalhes</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-label">Revisão</div>
+            </div>
+        </div>
+
+        <!-- Formulário de Denúncia -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <form id="formDenuncia">
+                    <!-- Passo 1: Informações Básicas -->
+                    <div class="form-step active fade-in" id="step1">
+                        <div class="form-section">
+                            <h3 class="mb-4">
+                                <i class="fas fa-info-circle me-2" style="color: var(--primary-blue);"></i>
+                                Informações Básicas
+                            </h3>
+                            
+                            <div class="info-card">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                <strong>Proteção de Dados:</strong> Sua identidade será preservada e todas as informações são tratadas com confidencialidade.
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="tipo_denuncia" class="form-label">Tipo de Denúncia *</label>
+                                <select class="form-select" id="tipo_denuncia" name="tipo_denuncia" required>
+                                    <option value="">Selecione o tipo...</option>
+                                    <option value="mensagem_ofensiva">Mensagens ofensivas ou ameaçadoras</option>
+                                    <option value="difamacao">Difamação ou fofocas online</option>
+                                    <option value="exclusao_social">Exclusão social em redes sociais</option>
+                                    <option value="roubo_identidade">Roubo de identidade ou perfis falsos</option>
+                                    <option value="exposicao_conteudo">Exposição de conteúdo constrangedor</option>
+                                    <option value="outro">Outro tipo de cyberbullying</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="plataforma" class="form-label">Onde ocorreu? *</label>
+                                <select class="form-select" id="plataforma" name="plataforma" required>
+                                    <option value="">Selecione a plataforma...</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="twitter">Twitter/X</option>
+                                    <option value="tiktok">TikTok</option>
+                                    <option value="discord">Discord</option>
+                                    <option value="jogo_online">Jogo Online</option>
+                                    <option value="email">E-mail</option>
+                                    <option value="outro">Outra plataforma</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="data_ocorrencia" class="form-label">Data aproximada da ocorrência *</label>
+                                <input type="date" class="form-control" id="data_ocorrencia" name="data_ocorrencia" required>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <div></div>
+                                <button type="button" class="btn btn-denuncia" onclick="nextStep(2)">
+                                    Próximo <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 2: Detalhes da Denúncia -->
+                    <div class="form-step" id="step2">
+                        <div class="form-section">
+                            <h3 class="mb-4">
+                                <i class="fas fa-clipboard-list me-2" style="color: var(--primary-blue);"></i>
+                                Detalhes da Ocorrência
+                            </h3>
+                            
+                            <div class="mb-3">
+                                <label for="descricao" class="form-label">Descreva o que aconteceu *</label>
+                                <textarea class="form-control" id="descricao" name="descricao" rows="5" 
+                                          placeholder="Descreva com detalhes o ocorrido, incluindo o que foi dito ou feito, quem estava envolvido e como você se sentiu..." required></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="envolvidos" class="form-label">Pessoas envolvidas</label>
+                                <input type="text" class="form-control" id="envolvidos" name="envolvidos" 
+                                       placeholder="Nomes ou perfis das pessoas envolvidas (se souber)">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="evidencias" class="form-label">Evidências (opcional)</label>
+                                <textarea class="form-control" id="evidencias" name="evidencias" rows="3" 
+                                          placeholder="Links, prints ou outras evidências que possam ajudar na investigação..."></textarea>
+                                <div class="form-text">Não compartilhe senhas ou informações muito pessoais.</div>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="ja_denunciou" name="ja_denunciou">
+                                <label class="form-check-label" for="ja_denunciou">
+                                    Já denunciei este caso para a plataforma onde ocorreu
+                                </label>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep(1)">
+                                    <i class="fas fa-arrow-left me-2"></i> Voltar
+                                </button>
+                                <button type="button" class="btn btn-denuncia" onclick="nextStep(3)">
+                                    Próximo <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passo 3: Revisão e Envio -->
+                    <div class="form-step" id="step3">
+                        <div class="form-section">
+                            <h3 class="mb-4">
+                                <i class="fas fa-check-circle me-2" style="color: var(--primary-blue);"></i>
+                                Revisão e Confirmação
+                            </h3>
+                            
+                            <div class="info-card">
+                                <i class="fas fa-eye me-2"></i>
+                                <strong>Revise suas informações:</strong> Confirme se todos os dados estão corretos antes de enviar.
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5>Resumo da Denúncia:</h5>
+                                <div id="resumoDenuncia" class="p-3 border rounded bg-light">
+                                    <!-- Resumo será preenchido via JavaScript -->
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="confirmacao" name="confirmacao" required>
+                                <label class="form-check-label" for="confirmacao">
+                                    Confirmo que as informações fornecidas são verdadeiras e estou ciente de que esta denúncia será tratada com confidencialidade.
+                                </label>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep(2)">
+                                    <i class="fas fa-arrow-left me-2"></i> Voltar
+                                </button>
+                                <button type="submit" class="btn btn-denuncia">
+                                    <i class="fas fa-paper-plane me-2"></i> Enviar Denúncia
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Contatos de Emergência -->
+                <div class="emergency-contact fade-in">
+                    <h4>
+                        <i class="fas fa-phone-alt me-2"></i>
+                        Precisa de Ajuda Imediata?
+                    </h4>
+                    <p class="mb-2">Disque 100 - Direitos Humanos</p>
+                    <p class="mb-2">Centro de Valorização da Vida - 188</p>
+                    <p class="mb-0">Polícia Civil - 197</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p>&copy; 2024 Bully - Combate ao Cyberbullying. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // JavaScript permanece o mesmo da versão anterior
+        let currentStep = 1;
+        
+        function showStep(step) {
+            document.querySelectorAll('.form-step').forEach(formStep => {
+                formStep.classList.remove('active');
+            });
+            
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            document.querySelectorAll('.step').forEach(stepEl => {
+                stepEl.classList.remove('active');
+                if (parseInt(stepEl.dataset.step) <= step) {
+                    stepEl.classList.add('active');
+                }
+            });
+            
+            currentStep = step;
+        }
+        
+        function nextStep(step) {
+            if (validateStep(currentStep)) {
+                if (step === 3) {
+                    generateSummary();
+                }
+                showStep(step);
+            }
+        }
+        
+        function prevStep(step) {
+            showStep(step);
+        }
+        
+        function validateStep(step) {
+            return true;
+        }
+        
+        function generateSummary() {
+            const formData = new FormData(document.getElementById('formDenuncia'));
+            const resumo = document.getElementById('resumoDenuncia');
+            
+            const tipoMap = {
+                'mensagem_ofensiva': 'Mensagens ofensivas ou ameaçadoras',
+                'difamacao': 'Difamação ou fofocas online',
+                'exclusao_social': 'Exclusão social em redes sociais',
+                'roubo_identidade': 'Roubo de identidade ou perfis falsos',
+                'exposicao_conteudo': 'Exposição de conteúdo constrangedor',
+                'outro': 'Outro tipo de cyberbullying'
+            };
+            
+            const plataformaMap = {
+                'whatsapp': 'WhatsApp',
+                'instagram': 'Instagram',
+                'facebook': 'Facebook',
+                'twitter': 'Twitter/X',
+                'tiktok': 'TikTok',
+                'discord': 'Discord',
+                'jogo_online': 'Jogo Online',
+                'email': 'E-mail',
+                'outro': 'Outra plataforma'
+            };
+            
+            resumo.innerHTML = `
+                <p><strong>Tipo:</strong> ${tipoMap[formData.get('tipo_denuncia')] || 'Não informado'}</p>
+                <p><strong>Plataforma:</strong> ${plataformaMap[formData.get('plataforma')] || 'Não informado'}</p>
+                <p><strong>Data:</strong> ${formData.get('data_ocorrencia') || 'Não informado'}</p>
+                <p><strong>Descrição:</strong> ${formData.get('descricao').substring(0, 100)}${formData.get('descricao').length > 100 ? '...' : ''}</p>
+                <p><strong>Envolvidos:</strong> ${formData.get('envolvidos') || 'Não informado'}</p>
+                <p><strong>Já denunciou à plataforma:</strong> ${formData.get('ja_denunciou') ? 'Sim' : 'Não'}</p>
+            `;
+        }
+        
+        document.getElementById('formDenuncia').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!document.getElementById('confirmacao').checked) {
+                alert('Por favor, confirme que as informações estão corretas.');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const dados = Object.fromEntries(formData);
+            
+            fetch('/salvar-denuncia', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/denuncia/sucesso';
+                } else {
+                    alert('Erro ao enviar denúncia: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao enviar denúncia. Tente novamente.');
+            });
+        });
+        
+        showStep(1);
+    </script>
+</body>
+</html>
